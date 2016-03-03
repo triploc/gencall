@@ -1,21 +1,46 @@
 require("sugar");
 
 var express = require("express"),
-    validator = require('validator');
+    validator = require("validator"),
+    ejs = require("ejs"),
+    fs = require("fs");
 
 exports.router = function(options) {
     return new Router(express.router(options));
 };
 
-exports.handleInvalid = function(req, res, err) {
+exports.invalid = function(req, res, err) {
     res.write(req.errors);
     res.end();
 };
+
+exports.compile = true;
 
 function Router(router) {
     
     var me = this,
         schema = { };
+    
+    this.client = function(lang, cb) {
+        var lang = format.toLowerCase(),
+            filename = __dirname + "/" + lang + ".ejs";
+
+        fs.readFile(filename, function(err, data) {
+            if (err) cb(err);
+            else {
+                var output = null;
+                try {
+                    output = ejs.render(data.toString(), schema, { filename: filename });
+                }
+                catch (ex) {
+                    cb(ex);
+                    return;
+                }
+
+                cb(null, output);
+            }
+        });
+    };
     
     this.use = router.use;
     
@@ -119,10 +144,10 @@ function handleRequest(req, res, next, inputs, handler) {
         else if (req.body && req.body[key]) value = req.body[key];
         
         var input = inputs[key];
-        if (!input.empty && (!value || value.trim() == "")) {
-            errors.push(key + " cannot be missing.", next);
+        if (input.required && (!value || value.trim() == "")) {
+            errors.push(`${key} cannot be missing.`, next);
         }
-        else if (input.empty && !value) {
+        else if (!input.required && !value) {
             value = "";
         }
         
@@ -252,7 +277,7 @@ function handleRequest(req, res, next, inputs, handler) {
     req.params = output;
     
     if (errors.length && input.validate) {
-        exports.handleInvalid(req, res);
+        exports.invalid(req, res);
     }
     else {
         handler(req, res, next);
