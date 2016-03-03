@@ -14,7 +14,7 @@ var router = gencall.router({
     strict: false
 });
 
-router.secure().get("api/:lang").params({
+router.call().secure().get("api/:lang").params({
     lang: {
         type: "text",
         max: "10",
@@ -27,4 +27,38 @@ router.secure().get("api/:lang").params({
     });
 });
 
+```
+
+The router object is compatible the Express Router object.  The `router.call()` method returns the main Gentleman Caller interface.
+
+### .secure([privileges])
+
+Requires that the request be made from an authenticated user.  If privileges are specified, the user must be authorized for those roles.
+
+Gentleman Caller comes with a default security implementation that can be overridden.  It assumes that `req.session.user` exists for an authenticated user and that `req.session.user.privileges` exists for authorization.
+
+```javascript
+gencall.secure = function(req, res, next) { };
+```
+
+### .params([interface])
+
+```javascript
+call.params({
+    phone: { type: "phone" }
+})
+```
+
+### .METHOD(... url)
+
+```javascript
+call.get("/one", "/two", "/three")
+```
+
+### .execute(cb)
+
+```javascript
+call.execute((req, res, next) => {
+    // handle the call
+})
 ```

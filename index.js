@@ -34,6 +34,12 @@ function Router(router) {
     var me = this,
         schema = { };
     
+    for (var param in router) {
+        if (Object.isFunction(router[param])) {
+            me[param] = router[param];
+        }
+    }
+    
     this.client = function(lang, cb) {
         var lang = format.toLowerCase(),
             filename = __dirname + "/" + lang + ".ejs";
@@ -55,11 +61,7 @@ function Router(router) {
         });
     };
     
-    this.use = router.use;
-    
-    this.param = router.param;
-    
-    this.route = function() {
+    this.call = function() {
         return new Call(schema, router);
     };
     
