@@ -1,0 +1,24 @@
+function call(method, url, arguments, cb) {
+    $http({
+        method: method,
+        url: url,
+        data: arguments,
+        responseType: "json"
+    }).then(function(response) {
+        if (response.data.success) cb(null, response.data);
+        else cb(new Error(response.data.status + " " + status.data.description), data);   
+    }, function(response) {
+        cb(new Error(response.status + " " + response.statusText));
+    });    
+}
+
+<%
+    Object.keys(schema).forEach(function(key) {
+        var endpoint = schema[key];
+%>
+function <%= key %>(params, cb) {
+    call(<%= endpoint.method %>, "<%= endpoint.url %>", params, cb);
+}
+<%
+    })
+%>

@@ -1,0 +1,27 @@
+function call(method, url, arguments, cb) {
+    $.ajax({
+        method: method,
+        url: url,
+        data: arguments,
+        dataType: "json",
+        timeout: 5000,
+        success: function(data, status, xhr) {
+            if (data.success) cb(null, data);
+            else cb(new Error(data.status + " " + status.description), data);
+        },
+        error: function(jqXHR, status, error) {
+            cb(new Error(status + " " + error));
+        }
+    });
+}
+
+<%
+    Object.keys(schema).forEach(function(key) {
+        var endpoint = schema[key];
+%>
+function <%= key %>(params, cb) {
+    call(<%= endpoint.method %>, "<%= endpoint.url %>", params, cb);
+}
+<%
+    })
+%>
