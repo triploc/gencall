@@ -74,6 +74,18 @@ function Call(router) {
     
     this.routes = [ ];
     
+    this.name = function(name) {
+        me.remoteName = name;
+    };
+    
+    this.describe = function(message) {
+        me.description = message;
+    };
+    
+    this.version = function(semanticVersion) {
+        me.semanticVersion = semanticVersion;
+    };
+    
     this.secure = function() { 
         me.authenticated = true;
         me.privileges = Array.create(arguments).compact(true);

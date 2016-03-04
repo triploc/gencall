@@ -1,0 +1,40 @@
+<%
+    schema.forEach(function(interface) {
+        if (interface.routes.length > 1) {
+%>
+function <%= interface.remoteName || interface.routes.last().parameterize().camelize(false) %>(params, cb) {
+    _rpc_("<%= interface.routes.first() %>", "<%= interface.routes.last() %>", params, cb);
+}
+<%
+        }
+        else {
+            var methods = interface.routes.groupBy((r) => { return r.last(); }),
+                routes = Object.keys(methods);
+            
+            if (routes.length == 1) {
+%>
+var <%= interface.remoteName || routes.first().parameterize().camelize(false) %> = {
+<% methods[routes.first()].forEach(function(route) { %>
+    <%= route.first() %>: function(params, cb) {
+        _rpc_("<%= route.first() %>", "<%= route.last() %>", params, cb);
+    },
+<% }) %>
+};
+<%
+            }
+            else {
+                routes.forEach(function(path) {
+%>
+var <%= path.parameterize().camelize(false) %> = {
+<% methods[path].forEach(function(route) { %>
+    <%= route.first() %>: function(params, cb) {
+        _rpc_("<%= route.first() %>", "<%= route.last() %>", params, cb);
+    },
+<% }) %>
+};
+<%
+                });
+            }
+        }
+    })
+%>

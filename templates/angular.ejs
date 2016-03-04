@@ -12,13 +12,4 @@ function call(method, url, arguments, cb) {
     });    
 }
 
-<%
-    Object.keys(schema).forEach(function(key) {
-        var endpoint = schema[key];
-%>
-function <%= key %>(params, cb) {
-    call(<%= endpoint.method %>, "<%= endpoint.url %>", params, cb);
-}
-<%
-    })
-%>
+<%- include('javascript') %>
