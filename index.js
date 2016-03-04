@@ -7,7 +7,7 @@ var express = require("express"),
     fs = require("fs");
 
 exports.router = function(options) {
-    return new Router(express.router(options));
+    return new Router(express.Router(options));
 };
 
 exports.secure = function(req, res, next) {
@@ -40,16 +40,20 @@ function Router(router) {
         }
     }
     
+    this.attach = function(parent) {
+        parent.use(router);
+    };
+    
     this.client = function(lang, cb) {
-        var lang = format.toLowerCase(),
-            filename = __dirname + "/" + lang + ".ejs";
+        var format = lang.toLowerCase(),
+            filename = __dirname + "/templates/" + format + ".ejs";
 
         fs.readFile(filename, function(err, data) {
             if (err) cb(err);
             else {
                 var output = null;
                 try {
-                    output = ejs.render(data.toString(), schema, { filename: filename });
+                    output = ejs.render(data.toString(), { schema: schema }, { filename: filename });
                 }
                 catch (ex) {
                     cb(ex);
@@ -332,7 +336,7 @@ function handleRequest(req, res, next) {
                 errors.push(`${key} must be greater than ${input.min}.`);
             }
             
-            if (input.max && input.max =< value) {
+            if (input.max && input.max <= value) {
                 errors.push(`${key} must be less than ${input.max}.`);
             }
         }
