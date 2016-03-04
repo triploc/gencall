@@ -305,8 +305,8 @@ function handleRequest(req, res, next) {
                     errors.push(`${key} is not alphanumeric text.`);
                 }
             }
-            else if (value && type == "isAlpha") {
-                if (!validator.isAlphanumeric(value)) {
+            else if (value && type == "alpha") {
+                if (!validator.isAlpha(value)) {
                     errors.push(`${key} is not alphabetical text.`);
                 }
             }
@@ -316,11 +316,11 @@ function handleRequest(req, res, next) {
         }
         
         if (input.min || input.max) {
-            if (input.min && input.min > value) {
+            if (input.min && input.min >= value) {
                 errors.push(`${key} must be greater than ${input.min}.`);
             }
             
-            if (input.max && input.max < value) {
+            if (input.max && input.max =< value) {
                 errors.push(`${key} must be less than ${input.max}.`);
             }
         }
