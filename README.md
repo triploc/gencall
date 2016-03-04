@@ -5,7 +5,6 @@
 Express router extension for RESTful API's.
 
 ```javascript
-
 var gencall = require("gencall");
 
 var router = gencall.router({ 
@@ -26,7 +25,6 @@ router.call().secure().get("api/:lang").params({
         res.end();
     });
 });
-
 ```
 
 ## Express compatible
@@ -70,6 +68,11 @@ call.params({
 })
 ```
 
+__Validation and Tranformation Parameters__
+
+required
+> cannot be missing or empty
+
 ### .METHOD(... url)
 
 These methods will bind HTTP methods to the supplied URL route patterns.  Valid methods are:
@@ -78,9 +81,11 @@ These methods will bind HTTP methods to the supplied URL route patterns.  Valid 
 * post
 * getpost
 * put
+* patch
 * delete
 * head
 * options
+* trace
 * all
 
 ```javascript

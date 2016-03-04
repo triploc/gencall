@@ -32,7 +32,7 @@ exports.secure = function(req, res, next) {
 function Router(router) {
     
     var me = this,
-        schema = { };
+        schema = [ ];
     
     for (var param in router) {
         if (Object.isFunction(router[param])) {
@@ -62,15 +62,17 @@ function Router(router) {
     };
     
     this.call = function() {
-        return new Call(schema, router);
+        schema.push(new Call(router));
+        return schema.last();
     };
     
 }
 
-function Call(schema, router) {
+function Call(router) {
     
-    var me = this,
-        routes = [ ];
+    var me = this;
+    
+    this.routes = [ ];
     
     this.secure = function() { 
         me.authenticated = true;
@@ -78,53 +80,63 @@ function Call(schema, router) {
         return me;
     };
     
-    this.params = function(inputs) {
-        schema[pattern] = inputs;
+    this.params = function(interface) {
+        me.interface = interface;
         return me;
     };
     
     this.all = function() {
-        routes.add([ "all" ].zip(Array.create(arguments).compact(true)));
+        me.routes.add([ "all" ].zip(Array.create(arguments).compact(true)));
         return me;
     };
     
-    this.get = function() {
-        routes.add([ "get" ].zip(Array.create(arguments).compact(true)));
+    this.get = this.GET = function() {
+        me.routes.add([ "get" ].zip(Array.create(arguments).compact(true)));
         return me;
     };
     
-    this.get = function() {
-        routes.add([ "get", "post" ].zip(Array.create(arguments).compact(true)));
+    this.getpost = this.GETPOST = function() {
+        me.routes.add([ "get", "post" ].zip(Array.create(arguments).compact(true)));
         return me;
     };
     
-    this.post = function(route) {
-        routes.add([ "post" ].zip(Array.create(arguments).compact(true)));
+    this.post = this.POST = function() {
+        me.routes.add([ "post" ].zip(Array.create(arguments).compact(true)));
         return me;
     };
     
-    this.put = function(route) {
-        routes.add([ "put" ].zip(Array.create(arguments).compact(true)));
+    this.put = this.PUT = function() {
+        me.routes.add([ "put" ].zip(Array.create(arguments).compact(true)));
         return me;
     };
     
-    this.delete = function(route) {
-        routes.add([ "delete" ].zip(Array.create(arguments).compact(true)));
+    this.patch = this.PATCH = function() {
+        me.routes.add([ "patch" ].zip(Array.create(arguments).compact(true)));
         return me;
     };
     
-    this.head = function(route) {
-        routes.add([ "head" ].zip(Array.create(arguments).compact(true)));
+    this.delete = this.DELETE = function() {
+        me.routes.add([ "delete" ].zip(Array.create(arguments).compact(true)));
         return me;
     };
     
-    this.options = function(route) {
-        routes.add([ "options" ].zip(Array.create(arguments).compact(true)));
+    this.head = this.HEAD = function() {
+        me.routes.add([ "head" ].zip(Array.create(arguments).compact(true)));
+        return me;
+    };
+    
+    this.options = this.OPTIONS = function() {
+        me.routes.add([ "options" ].zip(Array.create(arguments).compact(true)));
+        return me;
+    };
+    
+    this.trace = this.TRACE = function() {
+        me.routes.add([ "trace" ].zip(Array.create(arguments).compact(true)));
         return me;
     };
     
     this.execute = function(cb) {
-        routes.forEach(function(route) {
+        me.routes.forEach(function(route) {
             router[route.first()](
                 route.last(), 
                 function(req, res, next) {
@@ -132,7 +144,7 @@ function Call(schema, router) {
                     req.privileges = me.privileges;
                     req.verb = route.first();
                     req.route = route.last();
-                    req.interface = schema[pattern];
+                    req.interface = me.interface;
                     next();
                 }, 
                 exports.secure, 
