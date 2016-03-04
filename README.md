@@ -72,47 +72,42 @@ These transformation operations and validation checks are performed in order.  W
 
 __Tranformation Parameters__
 
-> __sanitize__: *boolean*
-> Use Google Caja algorithm to remove script tags and other dangerous XSS vectors.
+> __sanitize__: *boolean* – use Google Caja algorithm to remove script tags and other dangerous XSS vectors.
 >
-> __strip__: *boolean, text, or array*
-> Strip all HTML tags, or just tags specified.
+> __strip__: *boolean, text, or array* – strip all HTML tags, or just tags specified.
 >
-> __compact__: *boolean*
-> Compact whitespace into single spaces.
+> __compact__: *boolean* – compact whitespace into single spaces.
 >
-> __truncate__: *integer*
-> Truncate input at a given number of characters.
+> __truncate__: *integer* – truncate input at a given number of characters.
 >
-> __words__: *integer*
-> Truncate input at a given number of words.
+> __words__: *integer* – truncate input at a given number of words.
 
 __Validation Parameters__
 
 > __required__: *boolean* – cannot be missing or empty
 >
-> __language__: *text* - ensures text belongs to a specific alphabet
+> __language__: *text* – ensures text belongs to a specific alphabet
 > > Arabic, Cyrillic, Greek, Hangul, Han, Kanji, Hebrew, Hiragana, Kana, Katakana, Latin, Thai, Devanagari
 >
-> __transform__: *text* - transforms textual case
+> __transform__: *text* – transforms textual case
 > > capitalize, titleize, uppercase, lowercase, dasherize, parameterize, humanize, underscore, spacify, camelcase, titlecase
 >
-> __type__: *text* - ensures data type
+> __type__: *text* – ensures data type
 > > integer, number, date, json, boolean, email, url, phone, uuid, creditcard, base64, currency, ascii, alphanumeric, alpha, location
 >
-> __min__: *any* - a minimum value
+> __min__: *any* – a minimum value
 >
-> __max__: *any* - a maximum value
+> __max__: *any* – a maximum value
 >
-> __length__: *integer* - a maximum length
+> __length__: *integer* – a maximum length
 >
-> __minlength__: *integer* - a minimum length
+> __minlength__: *integer* – a minimum length
 >
-> __match__: *regex* - a regular expression that must test true
+> __match__: *regex* – a regular expression that must test true
 >
-> __custom__: *function* - a custom synchronous validation function
+> __custom__: *function* – a custom synchronous validation function
 >
-> __validate__: *boolean* - determines if an invalid request aborts execution.
+> __validate__: *boolean* – determines if an invalid request aborts execution.
 
 ### .METHOD(... url)
 
