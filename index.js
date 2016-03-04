@@ -164,13 +164,6 @@ function handleRequest(req, res, next) {
         else if (req.body && req.body[key]) value = req.body[key];
         
         var input = inputs[key];
-        if (input.required && (!value || value.trim() == "")) {
-            errors.push(`${key} cannot be missing.`);
-        }
-        else if (!input.required && !value) {
-            value = "";
-        }
-        
         if (input.sanitize && value) {
             value = sanitize(value);
         }
@@ -183,7 +176,22 @@ function handleRequest(req, res, next) {
         if (input.compact && value) {
             value = value.compact();
         }
-
+        
+        if (input.truncate) {
+            value = value.truncate(input.truncate);
+        }
+        
+        if (input.words) {
+            value = value.truncateOnWord(input.words);
+        }
+        
+        if (input.required && (!value || value.trim() == "")) {
+            errors.push(`${key} cannot be missing.`);
+        }
+        else if (!input.required && !value) {
+            value = "";
+        }
+        
         if (input.language && value) {
             var languages = [
                 "Arabic", "Cyrillic", "Greek", "Hangul", "Han",
@@ -200,6 +208,7 @@ function handleRequest(req, res, next) {
         }
                 
         if (input.transform && value) {
+            input.transform = input.transform.toLowerCase();
             if (input.transform == "capitalize") value = value.capitalize();
             else if (input.transform == "titleize") value = value.titleize();
             else if (input.transform == "uppercase") value = value.toUpperCase();
@@ -326,14 +335,6 @@ function handleRequest(req, res, next) {
             if (input.minlength > value.length) {
                 errors.push(`${key} must be longer than ${input.minlength}.`);
             }
-        }
-        
-        if (input.truncate) {
-            value = value.truncate(input.truncate);
-        }
-        
-        if (input.words) {
-            value = value.truncateOnWord(input.words);
         }
         
         if (input.match) {

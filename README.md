@@ -68,10 +68,59 @@ call.params({
 })
 ```
 
-__Validation and Tranformation Parameters__
+These transformation operations and validation checks are performed in order.  When validation checks fail, the issues are recorded in `req.errors`.  If the `validate` parameter is true and there are validation errors, an HTTP 400 Invalid Request error will be thrown and the route the logic will not be executed.
 
-required
-> cannot be missing or empty
+__Tranformation Parameters__
+
+> __sanitize__ *boolean*
+> Use Google Caja algorithm to remove script tags and other dangerous XSS vectors.
+
+> __strip__ *boolean, text, or array*
+> Strip all HTML tags, or just tags specified.
+
+> __compact__ *boolean*
+> Compact whitespace into single spaces.
+
+> __truncate__ *integer*
+> Truncate input at a given number of characters.
+
+> __words__ *integer*
+> Truncate input at a given number of words.
+
+__Validation Parameters__
+
+> __required__ *boolean*
+> Cannot be missing or empty
+
+> __language__ *text*
+> Ensures text belongs to a specific alphabet
+> > Arabic, Cyrillic, Greek, Hangul, Han, Kanji, Hebrew, Hiragana, Kana, Katakana, Latin, Thai, Devanagari
+
+> __transform__ *text*
+> Transforms textual case
+> > capitalize, titleize, uppercase, lowercase, dasherize, parameterize, humanize, underscore, spacify, camelcase, titlecase
+
+> __type__ *text*
+> Ensures data type
+> > integer, number, date, json, boolean, email, url, phone, uuid, creditcard, base64, currency, ascii, alphanumeric, alpha, location
+
+> __min__ *any*
+> A minimum value
+
+> __max__ *any*
+> A maximum value
+
+> __length__ *integer*
+> A maximum length
+
+> __minlength__ *integer*
+> A minimum length
+
+> __match__ *regex*
+> A regular expression that must test true
+
+> __custom__ *function*
+> A custom synchronous validation function
 
 ### .METHOD(... url)
 
