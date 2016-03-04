@@ -1,4 +1,4 @@
-![Gentleman Caller](/gc.jpg "Gentleman Caller")
+![Gentleman Caller](/package.jpg "Gentleman Caller")
 
 # Gentleman Caller
 
@@ -109,20 +109,24 @@ __Validation Parameters__
 >
 > __validate__: *boolean* – determines if an invalid request aborts execution.
 
+__Metadata Parameters__
+
+> __description__: *text* – a description that can be used in generating documentation.
+
 ### .METHOD(... url)
 
 These methods will bind HTTP methods to the supplied URL route patterns.  Valid methods are:
 
-* get
-* post
-* getpost
-* put
-* patch
-* delete
-* head
-* options
-* trace
-* all
+* GET
+* POST
+* GETPOST (GET OR POST)
+* PUT
+* PATCH
+* DELETE
+* HEAD
+* OPTIONS
+* TRACE
+* ALL
 
 ```javascript
 call.get("/one", "/two", "/three")

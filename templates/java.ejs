@@ -1,0 +1,601 @@
+////////////////////////////////////////////////////////////////
+// Sup! Java Client Library
+// Auto-Generated at <%= new Date() %>
+////////////////////////////////////////////////////////////////
+package sup.client;
+
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+/**
+ *  Auto-Generated at <%= new Date() %>.
+ */
+public class API {
+
+	public static String BASE_URL = "<%= request.url %>";
+	public static int CONNECTION_TIMEOUT = 10000;
+	public static int SOCKET_TIMEOUT = 10000;
+	public static String CREDENTIALS = "";
+	public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("MM/dd/yyyy");
+	public static final PeriodFormatter DURATION_FORMATTER = new PeriodFormatterBuilder().appendHours().appendSeparator(":").appendMinutes().appendSeparator(":").appendSecondsWithMillis().toFormatter();
+
+	public static String USER_AGENT = "Sup!Java";
+	public static String LOGIN = "";
+    public static String PASSWORD = "";
+
+	public static long TOTAL_CALLS = 0;
+	public static long TOTAL_NETWORK_TIME = 0;
+	public static long TOTAL_NETWORK_LATENCY = 0;
+
+	/**
+	 * Response to a server API call.
+	 */
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class Response {
+		private boolean success;
+		private String initiated = "";
+		private String duration = "";
+		private Period durationDT = new Period();
+		private int statusCode;
+		private Security security = new Security();
+		private Validation validation = new Validation();
+		private Error[] errors = new Error[0];
+		private Result results = new Result();
+
+		public Response() {
+			this.initiated = "";
+			this.duration = "";
+		}
+		
+		/**
+		 * Indicates if the request was processed successfully by the server.
+		 */
+		public boolean isSuccess() {
+			return success;
+		}
+
+		@JsonProperty("Success")
+		public void setSuccess(boolean success) {
+			this.success = success;
+		}
+
+		/**
+		 * Gets the HTTP status code of the response.
+		 */
+		public int getStatusCode() {
+			return statusCode;
+		}
+
+		@JsonProperty("StatusCode")
+		public void setStatusCode(int statusCode) {
+			this.statusCode = statusCode;
+		}
+		
+		/**
+		 * Gets the time at which the request was received by the server.
+		 */
+		public String getInitiated() {
+			return initiated;
+		}
+
+		@JsonProperty("Initiated")
+		public void setInitiated(String initiated) {
+			this.initiated = initiated;
+		}
+
+		/**
+		 * Gets the the server processing time required to service the request.
+		 */
+		public String getDuration() {
+			return duration;
+		}
+
+		/**
+		 * Gets the the server processing time required to service the
+		 * request in a joda datetime object.
+		*/
+		public Period getDurationDT() {
+			return durationDT;
+		}
+    
+		@JsonProperty("Duration")
+		public void setDuration(String duration) {
+			this.duration = duration;
+			try {
+				this.durationDT = DURATION_FORMATTER.parsePeriod(duration);
+			} catch (Exception e) {
+				// Swallow
+			}
+		}
+		
+		/**
+		 * Gets any server errors that occurred while processing the request.
+		 */
+		public Error[] getErrors() {
+			return errors;
+		}
+
+		@JsonProperty("Errors")
+		public void setErrors(Error[] errors) {
+			this.errors = errors;
+		}
+
+		/**
+		 * Gets any security issues associated with the request.
+		 */
+		public Security getSecurity() {
+			return security;
+		}
+
+		@JsonProperty("Security")
+		public void setSecurity(Security security) {
+			this.security = security;
+		}
+
+		/**
+		 * Gets any validation issues associated with the request.
+		 */
+		public Validation getValidation() {
+			return validation;
+		}
+
+		@JsonProperty("Validation")
+		public void setValidation(Validation validation) {
+			this.validation = validation;
+		}
+
+		/**
+		 * Gets the results associated with the request.
+		 */
+		public Result getResults() {
+			return results;
+		}
+
+		@JsonProperty("Results")
+		public void setResults(Result results) {
+			this.results = results;
+		}
+	}
+
+	/**
+	 * Server error representation.
+	 */
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class Error {
+		private String error = "";
+		private String parameter = ""; 
+		private String message = "";
+		private String originator = "";
+		private String[] strackTrace = new String[0];
+		
+		public Error() {
+			this.error = "";
+			this.message = "";
+			this.originator = "";
+			this.setParameter(""); 
+		}
+		
+		/**
+		 * Gets the error text.
+		 */
+		public String getError() {
+			return error;
+		}
+		
+		/**
+		 * Gets the message associated with the error.
+		 */
+		public String getMessage() {
+			return message;
+		}
+		
+		/**
+		 * Gets the originator of the error. Useful for debugging server
+		 * code.
+		 */
+		public String getOriginator() {
+			return originator;
+		}
+		
+		/**
+		 * Gets the stack trace of the error. Useful for debugging server
+		 * code.
+		 */
+		public String[] getStrackTrace() {
+			return strackTrace;
+		}
+		
+		@JsonProperty("Error")
+		public void setError(String error) {
+			this.error = error;
+		}
+		
+		@JsonProperty("Message")
+		public void setMessage(String message) {
+			this.message = message;
+		}
+		
+		@JsonProperty("Originator")
+		public void setOriginator(String originator) {
+			this.originator = originator;
+		}
+		
+		@JsonProperty("StackTrace")
+		public void setStrackTrace(String[] strackTrace) {
+			this.strackTrace = strackTrace;
+		}
+		
+		@JsonProperty("Parameter")
+		public void setParameter(String parameter) {
+			this.parameter = parameter;
+		}
+		
+		public String getParameter() {
+			return parameter;
+		}
+	}
+
+	/**
+	 * Validation error container.
+	 */
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class Validation {
+		private boolean valid;
+		private Error[] errors = new Error[0];
+
+		public Error[] getErrors() {
+			return errors;
+		}
+
+		public boolean isValid() {
+			return valid;
+		}
+
+		@JsonProperty("Errors")
+		public void setErrors(Error[] errors) {
+			this.errors = errors;
+		}
+
+		@JsonProperty("Valid")
+		public void setValid(boolean valid) {
+			this.valid = valid;
+		}
+	}
+
+	/**
+	 * Authentication and authorization information for the API request.
+	 */
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class Security {
+		private boolean approved;
+		private boolean authenticationProblem;
+		private boolean authorizationProblem;
+		private String[] messages = new String[0];
+		private Object user;
+
+		public String[] getMessages() {
+			return messages;
+		}
+
+		public Object getUser() {
+			return user;
+		}
+
+		public boolean isApproved() {
+			return approved;
+		}
+
+		public boolean isAuthenticationProblem() {
+			return authenticationProblem;
+		}
+
+		public boolean isAuthorizationProblem() {
+			return authorizationProblem;
+		}
+
+		@JsonProperty("Approved")
+		public void setApproved(boolean approved) {
+			this.approved = approved;
+		}
+
+		@JsonProperty("AuthenticationProblem")
+		public void setAuthenticationProblem(boolean authenticationProblem) {
+			this.authenticationProblem = authenticationProblem;
+		}
+
+		@JsonProperty("AuthorizationProblem")
+		public void setAuthorizationProblem(boolean authorizationProblem) {
+			this.authorizationProblem = authorizationProblem;
+		}
+
+		@JsonProperty("Messages")
+		public void setMessages(String[] messages) {
+			this.messages = messages;
+		}
+
+		@JsonProperty("User")
+		public void setUser(Object user) {
+			this.user = user;
+		}
+	}
+
+	/**
+	 * Data results of API operation.
+	 */
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class Result {
+		private boolean array; 
+		private List<Object> values;
+		
+		/**
+		 * Indicates if the result is an array or a scalar.
+		 */
+		public boolean isArray() {
+			return array;
+		}
+		
+		/**
+		 * Sets the array indicator.
+		 */
+		@JsonProperty("Array")
+		public void setArray(boolean array) {
+			this.array = array;
+		}
+		
+		/**
+		 * Gets the data values of the result.
+		 */
+		public List<Object> getValues() {
+			return values;
+		}
+		
+		/**
+		 * Sets the data values of the result.
+		 */
+		@JsonProperty("Values")
+		public void setValues(List<Object> values) {
+			this.values = values;
+		} 
+	}
+
+	/**
+	 * Serialize object to string.
+	 */
+	public static String serialize(Object value) {
+		if (value != null) {
+			if (value instanceof LocalDate) return ((LocalDate)value).toString(DATE_FORMATTER);
+			else return value.toString();
+		}
+		else return null;
+	}
+
+	/**
+	 * Perform HTTP GET operation on the server.
+	 */
+	public static Response get(URI uri) throws Exception {
+		HttpParams parameters = new BasicHttpParams();
+		HttpConnectionParams.setConnectionTimeout(parameters, CONNECTION_TIMEOUT);
+		HttpConnectionParams.setSoTimeout(parameters, SOCKET_TIMEOUT);
+		DefaultHttpClient client = new DefaultHttpClient(parameters);
+		HttpGet request = new HttpGet(uri);
+		request.setHeader("User-Agent", USER_AGENT);
+
+		try {
+			Response response = executeRequest(client, request);
+			if (response != null && response.getStatusCode() == 401) {
+				CREDENTIALS = null;
+				client.getCredentialsProvider().setCredentials(new AuthScope(null, -1, AuthScope.ANY_REALM), new UsernamePasswordCredentials(LOGIN, PASSWORD));
+				return executeRequest(client, request);
+			}
+			else {
+				return response;
+			}
+		} 
+		finally {
+			client.getConnectionManager().shutdown();
+		}
+	}
+
+	/**
+	 * Execute HTTP GET request using given client.
+	 */
+	private static Response executeRequest(HttpClient client, HttpGet request) throws Exception {
+		long now = System.currentTimeMillis();
+		HttpResponse response = client.execute(request);
+		Header[] cookies = response.getHeaders("Set-Cookie");
+		for (Header cookie : cookies) {
+			if (cookie != null) {
+				if (cookie.getValue().contains("token=")) {
+					String token = cookie.getValue();
+					int start = token.indexOf("token=") + "token=".length();
+					int end = token.indexOf(";");
+					
+					if (end == -1) {
+						CREDENTIALS = token.substring(start);
+					} 
+					else if (end > start) {
+						CREDENTIALS = token.substring(start, end);
+					}
+				}
+			}
+		}
+
+		HttpEntity entity = response.getEntity();
+		if (entity != null) {
+			InputStream input = entity.getContent();
+			Charset charset = Charset.forName("UTF-8");
+			CharsetDecoder decoder = charset.newDecoder();
+				
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				Response response = (Response)mapper.readValue(new InputStreamReader(input, decoder), Response.class);
+				
+				long networkTime = System.currentTimeMillis() - now;
+				long networkLatency = networkTime - responseObject.getDurationDT().getMillis();
+
+				TOTAL_CALLS++;
+				TOTAL_NETWORK_TIME += networkTime;
+				TOTAL_NETWORK_LATENCY += networkLatency;
+        
+				return response;
+			}
+			finally {
+				input.close();
+			}
+		}
+
+		return null;
+	}
+
+	private static ExecutorService executor = Executors.newSingleThreadExecutor();
+
+	/**
+	 * Interface for handling asynchronous server API requests.
+	 */
+	public interface AsyncHandler {
+		/**
+		 * To be executed on successful completion.
+		 */
+		void complete(Response response);
+
+		/**
+		 * To be executed on an error.
+		 */
+		void error(Exception exception);
+	}
+
+	/**
+	 * Perform an asynchronous HTTP GET operation on the server.
+	 */
+	public static Future<Response> getAsync(final URI uri, final AsyncHandler handler) throws Exception {
+		return executor.submit(new Callable<Response>() {
+			public Response call() throws Exception {
+				try {
+					Response response = get(uri);
+					handler.complete(response);
+					return response;
+				}
+				catch (Exception e) {
+					handler.error(e);
+					return null;
+				}
+			}
+		});
+	}
+
+	/*
+	public static Future<Response> getAndroidAsync(final URI uri, final AsyncHandler handler) throws Exception {
+		return new AsyncTask<URI, Integer, Response>() {
+			protected Response doInBackground(URI... uri) {
+
+			}
+
+			protected void onProgressUpdate(Integer... progress) {
+
+			}
+
+			protected void onPostExecute(Response results) {
+
+			}
+		};
+	}
+	*/
+
+<%
+	for (var index in request.response.Results.Values)
+	{
+        var resource = request.response.Results.Values[index];
+%>
+	/** 
+	* <%= resource.Description %>
+<%
+	for (var index2 in resource.interface.parameters)
+	{
+        var input = resource.interface.parameters[index2];
+%>
+	* @param <%= (input.Name) + "      " + input.Description %>
+<%
+	}
+%>
+	*/
+	public static Response <%= resource.interface.name.replace(" ", "") %>(<%= "" /* string.Join(", ", resource.Inputs.Select(i => JavaType(i) + " " + CamelCase(i.Name))) */ %>) throws Exception {
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		parameters.add(new BasicNameValuePair("Token", CREDENTIALS));
+<%	
+	for (var index2 in resource.interface.parameters)
+	{
+        var input = resource.interface.parameters[index2];
+%>
+		parameters.add(new BasicNameValuePair("<%= input.Name %>", serialize(<%= (input.Name) %>)));
+<%
+	}
+%>	
+		URI uri = URIUtils.createURI("http", BASE_URL, -1, "<%= resource.interface.path %>.json", URLEncodedUtils.format(parameters, "UTF-8"), null);
+		return get(uri);
+	}
+
+	/** 
+	* <%= resource.interface.description %>
+<%
+	for (var index2 in resource.interface.parameters)
+	{
+        var input = resource.interface.parameters[index2];
+%>
+	* @param <%= (input.name) + "     " + input.description %>
+<%
+	}
+%>
+	*/
+	public static Future<Response> <%= (resource.interface.name.replace(" ", "")) %>Async(<%= "" /*string.Join(", ", resource.Inputs.Select(i => JavaType(i) + " " + CamelCase(i.Name)))*/ %><%= resource.interface.parameters.length > 0 ? ", ": "" %>final AsyncHandler handler) throws Exception {
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		parameters.add(new BasicNameValuePair("Token", CREDENTIALS));
+<%	
+	for (var index2 in resource.interface.parameters)
+	{
+        var input = resource.interface.parameters[index2];
+%>
+		parameters.add(new BasicNameValuePair("<%= input.name %>", serialize(<%= (input.name) %>)));
+<%
+	}
+%>	
+		URI uri = URIUtils.createURI("http", BASE_URL, -1, "<%= resource.interface.path %>.json", URLEncodedUtils.format(parameters, "UTF-8"), null);
+		return getAsync(uri, handler);
+	}
+<%
+	}		
+%>
+}

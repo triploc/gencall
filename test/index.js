@@ -1,26 +1,59 @@
-var express = require("express"),
-    fs = require("fs"),
-    gencall = require("../index");
-
-var app = express(),
-    router = gencall.router();
-
-router.call().get("/test").params({
-    phone: { type: "phone", required: true },
-    email: { type: "email" }
-});
-
+var fs = require("fs"),
+    rm = require("rimraf");
+    
 describe('Router', function() {
     
-    before(function() {
-        router.attach(app);
-        app.listen(3000);
+    var outputDir = __dirname + "/../test-output";
+    
+    before(function(done) {
+        rm(outputDir, function(err) {
+            if (err) throw err;
+            else fs.mkdir(outputDir, done);
+        });
     });
     
-    it("generates HTML documentation", function(done) {
+    var gencall = null,
+        router = null;
+    
+    it("ain't broke", function() {
+        gencall = require("../index");
+    })
+    
+    it("can create a router", function() {
+        router = gencall.router();
+    });
+
+    it("can register a call", function() {
+        router.call().get("/test").params({
+            phone: { type: "phone", required: true },
+            email: { type: "email" }
+        });
+    });
+    
+    it("can generate HTML documentation", function(done) {
         router.client("html", function(err, html) {
             if (err) throw err;
-            else fs.writeFile(__dirname + "/doc.html", html, done);
+            else {
+                fs.writeFile(outputDir + "/doc.html", html, done);
+            }
+        })
+    });
+    
+    it("can generate a jQuery client", function(done) {
+        router.client("jquery", function(err, js) {
+            if (err) throw err;
+            else {
+                fs.writeFile(outputDir + "/jquery.js", js, done);
+            }
+        })
+    });
+    
+    it("can generate an Angular client", function(done) {
+        router.client("angular", function(err, js) {
+            if (err) throw err;
+            else {
+                fs.writeFile(outputDir + "/angular.js", js, done);
+            }
         })
     });
     

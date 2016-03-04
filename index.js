@@ -80,14 +80,17 @@ function Call(router) {
     
     this.name = function(name) {
         me.remoteName = name;
+        return name;
     };
     
-    this.describe = function(message) {
-        me.description = message;
+    this.describe = function(desc) {
+        me.description = desc;
+        return name;
     };
     
-    this.version = function(semanticVersion) {
-        me.semanticVersion = semanticVersion;
+    this.version = function(semver) {
+        me.semanticVersion = semver;
+        return name;
     };
     
     this.secure = function() { 
