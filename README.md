@@ -16,10 +16,10 @@ var router = gencall.router({
 router.call().secure().get("api/:lang").params({
     lang: {
         type: "text",
-        max: "10",
+        length: 10,
         tranform: "lowercase"
     }
-}).execute(function(req, res, next) {
+}).process(function(req, res, next) {
     router.client(req.params.lang, function(err, src) {
         res.write(src);
         res.end();
@@ -27,9 +27,9 @@ router.call().secure().get("api/:lang").params({
 });
 ```
 
-## Express compatible
+## ExpressJS Compatible
 
-The router object is compatible the Express Router object.  
+The router object is a direct extension of the ExpressJS `Router` object.  So all the regular stuff works as expected.
 
 ```javascript
 router.all(route, handler)
@@ -39,7 +39,9 @@ router.route(route)
 router.use([route], middleware)
 ```
 
-## Caller interface
+View [docs here](http://expressjs.com/en/api.html#router "ExpressJS Router Docs").
+
+## Caller Interface
 
 The `router.call()` method returns the main Gentleman Caller interface.
 
@@ -57,9 +59,9 @@ Gentleman Caller comes with a default security implementation that can be overri
 gencall.secure = function(req, res, next) { };
 ```
 
-### .params([interface])
+### .params([inputs])
 
-Performs validation on submitted parameters.  Values are looked for first in `req.params`, then in `req.query`, then in `req.body`.  All values are then collected in the `req.params`.
+Performs validation on submitted parameters.  Values are looked for first in `req.params`, then in `req.query`, then in `req.body`.  All values are then collected in `req.params`.
 
 ```javascript
 call.params({
@@ -68,7 +70,7 @@ call.params({
 })
 ```
 
-These transformation operations and validation checks are performed in order.  When validation checks fail, the issues are recorded in `req.errors`.  If the `validate` parameter is true and there are validation errors, an HTTP 400 Invalid Request error will be thrown and the route the logic will not be executed.
+These transformation operations and validation checks are performed in order.  When validation checks fail, the issues are recorded in `req.errors`.  If the `abort` parameter is true and there are validation errors, an HTTP 400 Invalid Request error will be thrown and the request will not be processed.
 
 __Tranformation Parameters__
 
@@ -99,19 +101,19 @@ __Validation Parameters__
 >
 > __max__: *any* – a maximum value
 >
-> __length__: *integer* – a maximum length
+> __maxlength__: *integer* – a maximum length
 >
 > __minlength__: *integer* – a minimum length
 >
 > __match__: *regex* – a regular expression that must test true
 >
 > __custom__: *function* – a custom synchronous validation function
->
-> __validate__: *boolean* – determines if an invalid request aborts execution.
 
 __Metadata Parameters__
 
 > __description__: *text* – a description that can be used in generating documentation.
+>
+> __abort__: *boolean* – determines if an invalid request aborts execution.
 
 ### .METHOD(... url)
 
@@ -132,12 +134,12 @@ These methods will bind HTTP methods to the supplied URL route patterns.  Valid 
 call.get("/one", "/two", "/three")
 ```
 
-### .execute(cb)
+### .process(cb)
 
-If security and validation requirements are met, the execution logic behind the endpoint is invoked.
+If security and validation requirements are met, the execution logic behind the endpoint is invoked and the request is processed.
 
 ```javascript
-call.execute((req, res, next) => {
+call.process((req, res, next) => {
     // handle the call
 })
 ```

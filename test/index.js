@@ -24,7 +24,7 @@ describe('Router', function() {
     });
 
     it("can register a call", function() {
-        router.call().get("/test").params({
+        router.call().get("/test").validate({
             phone: { type: "phone", required: true },
             email: { type: "email" }
         });
