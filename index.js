@@ -43,7 +43,7 @@ exports.router = function(options) {
     };
     
     r.call = function() {
-        r.schema.push(new Call(router));
+        r.schema.push(new Call(r));
         return r.schema.last();
     };
     
@@ -102,7 +102,7 @@ function Call(router) {
     };
     
     this.params = function(params) {
-        me.params = params;
+        me.inputs = params;
         return me;
     };
     
@@ -165,12 +165,12 @@ function Call(router) {
                     req.privileges = me.privileges;
                     req.verb = route.first();
                     req.route = route.last();
-                    req.params = me.params;
+                    req.inputs = me.inputs;
                     next();
                 }, 
                 exports.secure,
                 validateRequest,
-                exports.validated
+                exports.validated,
                 cb
             );
         });
@@ -179,7 +179,7 @@ function Call(router) {
 }
 
 function validateRequest(req, res, next) {
-    var inputs = req.params, 
+    var inputs = req.inputs, 
         output = { }, 
         errors = [ ],
         abort = false;
