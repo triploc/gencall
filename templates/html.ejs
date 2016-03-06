@@ -2,13 +2,33 @@
 <html>
     <head>
         <title>Documentation</title>
-        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/lumen/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/paper/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $(".search").keyup(search);
+                $(".search").change(search);
+                search();
+                
+                function search() {
+                    var search = $(".search").val().trim();
+                    $(".no-calls").hide();
+                    if (search == "") $(".call").show();
+                    else {
+                        $(".call").hide();
+                        $(".call:contains('" + search + "')").show();
+                        if ($(".call:visible").length == 0) {
+                            $(".no-calls").show();
+                        }
+                    }
+                }
+            });
+        </script>
     </head>
     <body>
-        <nav class="navbar navbar-inverse">
+        <nav class="navbar">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
@@ -19,14 +39,12 @@
                     </button>
                     <a class="navbar-brand" href="#">
                         <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
-                        &nbsp;
-                        <b><em>Documentation</em></b>
                     </a>
                 </div>
                 <div class="collapse navbar-collapse" id="navbar-collapse">
                     <form class="navbar-form navbar-left hidden-xs col-6" role="search">
                         <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Search">
+                            <input type="text" class="form-control search" placeholder="Search">
                         </div>
                     </form>
                     <div class="navbar-right">
@@ -100,7 +118,15 @@
                     <%_ 
                             });
                         });
-                    _%>                
+                    _%>
+                    <div class="no-calls panel panel-default" style="display: none;">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">No Calls</h3>
+                        </div>
+                        <div class="panel-body">
+                            There are no calls that match your search.
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

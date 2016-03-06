@@ -295,9 +295,19 @@ function validateInput(key, input, value, errors) {
         else if (value && type == "boolean") {
             value = (value.toLowerCase() == "true");
         }
+        else if (value && type == "uuid") {
+            if (!validator.isUUID(value)) {
+                errors.push(`${key} is not a UUID.`);
+            }
+        }
         else if (value && type == "email") {
             if (!validator.isEmail(value)) {
                 errors.push(`${key} is not an email address.`);
+            }
+        }
+        else if (value && type == "domain") {
+            if (!validator.isFQDN(value)) {
+                errors.push(`${key} is not a domain.`);
             }
         }
         else if (value && type == "url") {
@@ -305,8 +315,18 @@ function validateInput(key, input, value, errors) {
                 errors.push(`${key} is not a URL.`);
             }
         }
+        else if (value && type == "ip") {
+            if (!validator.isIP(value)) {
+                errors.push(`${key} is not an IP address.`);
+            }
+        }
+        else if (value && type == "mac") {
+            if (!validator.isMACAddress(value)) {
+                errors.push(`${key} is not a MAC address.`);
+            }
+        }
         else if (value && type == "phone") {
-            if (!validator.isMobileNumber(value)) {
+            if (!validator.isMobileNumber(value, input.locale)) {
                 errors.push(`${key} is not a phone.`);
             }
         }
@@ -336,13 +356,18 @@ function validateInput(key, input, value, errors) {
             }
         }
         else if (value && type == "alphanumeric") {
-            if (!validator.isAlphanumeric(value)) {
+            if (!validator.isAlphanumeric(value, input.locale)) {
                 errors.push(`${key} is not alphanumeric text.`);
             }
         }
         else if (value && type == "alpha") {
-            if (!validator.isAlpha(value)) {
+            if (!validator.isAlpha(value, input.locale)) {
                 errors.push(`${key} is not alphabetical text.`);
+            }
+        }
+        else if (value && type == "hexcolor") {
+            if (!validator.isHexColor(value)) {
+                errors.push(`${key} is not a hex color.`);
             }
         }
         else if (value && type == "location") {
@@ -373,8 +398,18 @@ function validateInput(key, input, value, errors) {
     }
 
     if (input.match) {
-        if (!new RegEx(input.match).test(value)) {
-            errors.push(`${key} is not valid.`);
+        if (Object.isRegExp(input.match)) {
+            if (!input.match.test(value)) {
+                errors.push(`${key} is not valid.`);
+            }    
+        }
+        else if (Array.isArray(input.match)) {
+            if (input.match.indexOf(value) < 0) {
+                errors.push(`${key} is not valid.`);
+            }
+        }
+        else if (input.match != value) {
+            errors.push(`${key} does not match ${value}.`);
         }
     }
 

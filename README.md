@@ -105,7 +105,7 @@ __Validation Parameters__
 > > capitalize, titleize, uppercase, lowercase, dasherize, parameterize, humanize, underscore, spacify, camelcase, titlecase
 >
 > __type__: *text* – ensures data type
-> > integer, number, date, json, boolean, email, url, phone, uuid, creditcard, base64, currency, ascii, alphanumeric, alpha, location
+> > integer, number, date, json, boolean, uuid, email, domain, url, ip, mac, phone, uuid, creditcard, base64, currency, ascii, alphanumeric, alpha, hexcolor, location
 >
 > __min__: *any* – a minimum value
 >
@@ -115,12 +115,16 @@ __Validation Parameters__
 >
 > __minlength__: *integer* – a minimum length
 >
-> __match__: *regex* – a regular expression that must test true
+> __match__: *regex* – an exact value match, array of candidate values, or regular expression that must test true
 >
 > __custom__: *function* – a custom synchronous validation function
 
+The following metadata parameters either alter or annotate the validation process.
+
 __Metadata Parameters__
 
+> __locale__: *text* – a locale that effects the way data types are interpreted.
+>
 > __description__: *text* – a description that can be used in generating documentation.
 >
 > __abort__: *boolean* – determines if an invalid request aborts execution.
