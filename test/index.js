@@ -1,3 +1,5 @@
+require("sugar");
+
 var fs = require("fs"),
     rm = require("rimraf");
     
@@ -30,6 +32,16 @@ describe('Router', function() {
         });
     });
     
+    it("can load examples", function(done) {
+        fs.readdir(__dirname + "/../examples", function(err, files) {
+            files.filter(/.*js/i).forEach(function(file) {
+                require(__dirname + "/../examples/" + file);
+            });
+            
+            done();
+        })
+    });
+    
     it("can generate HTML documentation", function(done) {
         gencall.autoGenerate("html", function(err, html) {
             if (err) throw err;
@@ -53,6 +65,15 @@ describe('Router', function() {
             if (err) throw err;
             else {
                 fs.writeFile(outputDir + "/angular.js", js, done);
+            }
+        })
+    });
+    
+    it("can generate a Node.js client", function(done) {
+        gencall.autoGenerate("node", function(err, js) {
+            if (err) throw err;
+            else {
+                fs.writeFile(outputDir + "/node.js", js, done);
             }
         })
     });
