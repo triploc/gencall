@@ -96,7 +96,7 @@
                             if (options.logout) { 
                         _%>
                         <ul class="nav navbar-nav">
-                            <li><a href="#">Logout</a></li>
+                            <li><a href="<%= options.logout %>">Logout</a></li>
                         </ul>
                         <%_ 
                             } 
@@ -106,34 +106,87 @@
             </div>
         </nav>
         
+        <%_
+            routers.forEach(function(router) { 
+        _%>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-xs-12">
+                    <h1>
+                        <%= router.namespace || "Router" %>
+                        <small>
+                            <%= router.path || "/" %>
+                        </small>
+                    </h1>
+                    <p>
+                    <%_ if (router.description) { _%>
+                        <%= router.description %>
+                    <%_ } else { _%>
+                        <em class="text-muted">No description.</em>
+                    <%_ } _%>
+                        <span class="label label-primary text-uppercase pull-right"><%= router.calls.length %> call(s)</span>
+                        <%_ if (router.autenticated) { _%>
+                            <span class="label label-danger text-uppercase pull-right"><%= router.privileges ? router.privileges.join(',') : "Secure" %></span>
+                        <%_ } _%>
+                    </p>
                     <%_
-                        routers.forEach(function(router) { 
-                            router.calls.forEach(function(call) { 
-                                var title = call.title || call.routes.first().last().spacify().titleize();
+                        router.calls.forEach(function(call) { 
+                            var title = call.title || call.routes.first().last().replace(/\//gi, "-").titleize().trim();
                     _%>
                     <div class="call panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title"><%= title %></h3>
+                            <%_ 
+                                if (call.autenticated || router.authenticated) { 
+                                    var privileges = call.privileges;
+                                    if (router.privileges) privileges = router.privileges.union(call.privileges).compact(true);
+                            _%>
+                                <span class="label label-danger pull-right"><%= privileges ? privileges.join(',') : "Secure" %></span>
+                            <%_ } _%>
+                            <div class="panel-title"><b><%= title %></b></div>
                         </div>
                         <div class="panel-body">
-                            <div><%= call.description %></div>
+                            <%_ if (call.description) { _%>
+                            <div>
+                                <%= call.description %>
+                            </div>
+                            <%_ } else { _%>
+                            <div>
+                                <em class="text-muted">No description.</em>
+                            </div>
+                            <%_ } _%>
+                            <h6 class="text-uppercase"><small><b>Routes</b></small></h6>
                             <ul>
                                 <%_ call.routes.forEach(function(route) { _%>
-                                <li><%= route.first().toUpperCase() + " " + route.last() %></li>
+                                <li><%= route.first().toUpperCase() + " " + (router.path || "") + route.last() %></li>
                                 <%_ }) _%>
                             </ul>
-                            <%_ Object.keys(call.inputs).forEach(function(name) { _%>
-                            <div>
-                                <b><%= name %></b>
-                            </div>
-                            <%_ }) _%>
+                            <h6 class="text-uppercase"><small><b>Parameters</b></small></h6>
+                            <ul>
+                            <%_ 
+                                Object.keys(call.inputs).forEach(function(name) { 
+                                    var input = call.inputs[name];
+                            _%>
+                                <li>
+                                    <%= name %>
+                                    <%_ if (input.required) { _%>
+                                    <span class="label label-danger pull-right text-uppercase">required</span>
+                                    <%_ } _%>
+                                    <%_ if (input.type) { _%>
+                                    <span class="label label-success pull-right text-uppercase"><%= input.type %></span>
+                                    <%_ } _%>
+                                    <%_ if (input.description) { _%>
+                                    <ul>
+                                        <li><em>– <%= input.description %></em></li>
+                                    </ul>
+                                    <%_ } _%>
+                                </li>
+                            <%_ 
+                                }) 
+                            _%>
+                            </ul>
                         </div>
                     </div>
                     <%_ 
-                            });
                         });
                     _%>
                     <div class="no-calls alert alert-danger" role="alert" style="display: none;">
@@ -142,6 +195,9 @@
                 </div>
             </div>
         </div>
+        <%_ 
+            });
+        _%>
 
         <h6 class="text-center text-muted">
             <small>Auto-Generated at <%= new Date() %>.</small>

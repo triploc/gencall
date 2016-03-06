@@ -21,6 +21,12 @@ exports.router = function(options) {
         return r;
     };
     
+    r.secure = function() { 
+        r.authenticated = true;
+        r.privileges = Array.create(arguments).compact(true);
+        return me;
+    };
+    
     r.attachTo = function(parent, path) {
         r.path = path;
         parent.use(path, r);
@@ -150,8 +156,8 @@ function Call(router) {
             router[route.first()](
                 route.last(), 
                 function(req, res, next) {
-                    req.authenticated = me.authenticated;
-                    req.privileges = me.privileges;
+                    req.authenticated = me.authenticated || me.router.authenticated;
+                    req.privileges = me.router.privileges ? me.router.privileges.union(me.privileges).compact(true) : me.privileges;
                     req.verb = route.first();
                     req.route = route.last();
                     req.inputs = me.inputs;
