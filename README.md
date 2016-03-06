@@ -119,15 +119,17 @@ __Validation Parameters__
 >
 > __custom__: *function* – a custom synchronous validation function
 
-The following metadata parameters either alter or annotate the validation process.
-
 __Metadata Parameters__
 
-> __locale__: *text* – a locale that effects the way data types are interpreted.
+> __locale__: *text* – a locale that effects the way `alpha`, `alphanumeric`, and `phone` data types are interpreted
 >
-> __description__: *text* – a description that can be used in generating documentation.
+> __description__: *text* – a description that can be used in generating documentation
 >
-> __abort__: *boolean* – determines if an invalid request aborts execution.
+> __abort__: *boolean* – determines if an invalid request aborts execution
+
+__Recursive Processing__
+
+> __properties__: *object* – transformation and validation can be performed recursively on properties of an input
 
 ### .METHOD(... url)
 

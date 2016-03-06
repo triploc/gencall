@@ -416,6 +416,13 @@ function validateInput(key, input, value, errors) {
     if (input.custom) {
         !input.custom(value, errors);
     }
+    
+    if (input.properties) {
+        var keys = Object.keys(input.properties);
+        keys.forEach(function(key) {
+            validateInput(key, input.properties[key], value[key], errors);
+        });
+    }
 }
 
 exports.autoGenerate = function(template, options, cb) {

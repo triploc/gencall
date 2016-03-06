@@ -48,6 +48,9 @@
                         </div>
                     </form>
                     <div class="navbar-right">
+                        <%_ 
+                            if (options.doclinks) { 
+                        _%>
                         <ul class="nav navbar-nav">
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -63,6 +66,11 @@
                                 </ul>
                             </li>
                         </ul>
+                        <%_ 
+                            } 
+                            
+                            if (options.clientlinks) { 
+                        _%>
                         <ul class="nav navbar-nav">
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -82,9 +90,17 @@
                                 </ul>
                             </li>
                         </ul>
+                        <%_ 
+                            } 
+                            
+                            if (options.logout) { 
+                        _%>
                         <ul class="nav navbar-nav">
                             <li><a href="#">Logout</a></li>
                         </ul>
+                        <%_ 
+                            } 
+                        _%>
                     </div>
                 </div>
             </div>
@@ -96,10 +112,11 @@
                     <%_
                         routers.forEach(function(router) { 
                             router.calls.forEach(function(call) { 
+                                var title = call.title || call.routes.first().last().spacify().titleize();
                     _%>
                     <div class="call panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title"><%= call.title %></h3>
+                            <h3 class="panel-title"><%= title %></h3>
                         </div>
                         <div class="panel-body">
                             <div><%= call.description %></div>
@@ -119,13 +136,8 @@
                             });
                         });
                     _%>
-                    <div class="no-calls panel panel-default" style="display: none;">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">No Calls</h3>
-                        </div>
-                        <div class="panel-body">
-                            There are no calls that match your search.
-                        </div>
+                    <div class="no-calls alert alert-danger" role="alert" style="display: none;">
+                        There are no calls that match your search.
                     </div>
                 </div>
             </div>
