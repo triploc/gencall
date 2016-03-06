@@ -27,7 +27,17 @@ router.call().secure().get("api/:lang").params({
 });
 ```
 
-## ExpressJS Compatible
+## Create Routers
+
+Create a router with the same options that the `express.Router()` method takes.
+
+```javascript
+gencall.router({ 
+    caseSensitive: false,
+    mergeParams: false,
+    strict: false
+});
+```
 
 The router object is a direct extension of the ExpressJS `Router` object.  So all the regular stuff works as expected.
 
@@ -143,3 +153,55 @@ call.process((req, res, next) => {
     // handle the call
 })
 ```
+
+## Custom Behavior
+
+Validation behavior can be modified by overriding the `gencall.validated(req, res, next)` method.  By default, if validation fails for a request parameter and the `abort` flag is set, the response status is set to 400 and request processing is aborted.
+
+Security behavior can be modified by overriding the `gencall.secure(req, res, next)` method.  The default implementation assumes that `req.session.user` exists for an authenticated user and that `req.session.user.privileges` exists for authorization.  A response status of 401 or 403 are set and request processing is aborted on failure.
+
+## Metadata
+
+All routers that are created with the `gencall.router` are available through the `gencall.routers` array.
+
+Each router keeps track of all `Call` objects through a `router.calls` array.
+
+Each `Call` object maintains a list of routes (i.e. [ 'get', '/app' ]) in an array called `call.routes`.
+
+```javascript
+gencall.routers[0].calls[0].inputs;
+```
+
+The parameter metadata passed to the `call.params` method is stored in `call.inputs`.  When `call.secure` is called, `call.authenticated` is set to true and anny privileges passed are stored in `call.privileges`.
+
+```javascript
+gencall.routers[0].calls[0].inputs;
+gencall.routers[0].calls[0].authenticated;
+gencall.routers[0].calls[0].privileges;
+```
+
+### .name(name) and .describe(desc)
+
+Both `Router` and `Call` objects have `name` and `describe` methods which are used to generated documentation and client code.
+
+```javascript
+gencall
+    .router()
+    .name("app")
+    .describe("Contains main app routes.")
+    .call()
+        .name("app")
+        .describe("Main route.")
+        .get("/app")
+        .execute((req, res, next) => { });
+```
+
+### gencall.autoGenerate(template, options, cb)
+
+Client code and documentation can be automatically generated from metadata and built-in templates.
+
+> __template__: *text* – the desired output format 
+> > html, jquery, angular, node, csharp, java
+>
+> __options__: *object* – a set of options specific to the template format
+

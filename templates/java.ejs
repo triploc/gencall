@@ -1,8 +1,7 @@
 ////////////////////////////////////////////////////////////////
-// Sup! Java Client Library
 // Auto-Generated at <%= new Date() %>
 ////////////////////////////////////////////////////////////////
-package sup.client;
+package client;
 
 import java.io.File;
 import java.io.InputStream;
@@ -535,67 +534,67 @@ public class API {
 	}
 	*/
 
-<%
+<%_
 	for (var index in request.response.Results.Values)
 	{
         var resource = request.response.Results.Values[index];
-%>
+_%>
 	/** 
 	* <%= resource.Description %>
-<%
+<%_
 	for (var index2 in resource.interface.parameters)
 	{
         var input = resource.interface.parameters[index2];
-%>
+_%>
 	* @param <%= (input.Name) + "      " + input.Description %>
-<%
+<%_
 	}
-%>
+_%>
 	*/
 	public static Response <%= resource.interface.name.replace(" ", "") %>(<%= "" /* string.Join(", ", resource.Inputs.Select(i => JavaType(i) + " " + CamelCase(i.Name))) */ %>) throws Exception {
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("Token", CREDENTIALS));
-<%	
+<%_	
 	for (var index2 in resource.interface.parameters)
 	{
         var input = resource.interface.parameters[index2];
-%>
+_%>
 		parameters.add(new BasicNameValuePair("<%= input.Name %>", serialize(<%= (input.Name) %>)));
-<%
+<%_
 	}
-%>	
+_%>	
 		URI uri = URIUtils.createURI("http", BASE_URL, -1, "<%= resource.interface.path %>.json", URLEncodedUtils.format(parameters, "UTF-8"), null);
 		return get(uri);
 	}
 
 	/** 
 	* <%= resource.interface.description %>
-<%
+<%_
 	for (var index2 in resource.interface.parameters)
 	{
         var input = resource.interface.parameters[index2];
-%>
+_%>
 	* @param <%= (input.name) + "     " + input.description %>
-<%
+<%_
 	}
-%>
+_%>
 	*/
 	public static Future<Response> <%= (resource.interface.name.replace(" ", "")) %>Async(<%= "" /*string.Join(", ", resource.Inputs.Select(i => JavaType(i) + " " + CamelCase(i.Name)))*/ %><%= resource.interface.parameters.length > 0 ? ", ": "" %>final AsyncHandler handler) throws Exception {
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("Token", CREDENTIALS));
-<%	
+<%_	
 	for (var index2 in resource.interface.parameters)
 	{
         var input = resource.interface.parameters[index2];
-%>
+_%>
 		parameters.add(new BasicNameValuePair("<%= input.name %>", serialize(<%= (input.name) %>)));
-<%
+<%_
 	}
-%>	
+_%>	
 		URI uri = URIUtils.createURI("http", BASE_URL, -1, "<%= resource.interface.path %>.json", URLEncodedUtils.format(parameters, "UTF-8"), null);
 		return getAsync(uri, handler);
 	}
-<%
+<%_
 	}		
-%>
+_%>
 }

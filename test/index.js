@@ -31,7 +31,7 @@ describe('Router', function() {
     });
     
     it("can generate HTML documentation", function(done) {
-        router.client("html", function(err, html) {
+        gencall.autoGenerate("html", function(err, html) {
             if (err) throw err;
             else {
                 fs.writeFile(outputDir + "/doc.html", html, done);
@@ -40,7 +40,7 @@ describe('Router', function() {
     });
     
     it("can generate a jQuery client", function(done) {
-        router.client("jquery", function(err, js) {
+        gencall.autoGenerate("jquery", function(err, js) {
             if (err) throw err;
             else {
                 fs.writeFile(outputDir + "/jquery.js", js, done);
@@ -49,7 +49,7 @@ describe('Router', function() {
     });
     
     it("can generate an Angular client", function(done) {
-        router.client("angular", function(err, js) {
+        gencall.autoGenerate("angular", function(err, js) {
             if (err) throw err;
             else {
                 fs.writeFile(outputDir + "/angular.js", js, done);

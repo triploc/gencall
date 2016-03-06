@@ -1,6 +1,6 @@
 {
   "name": "gencall",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Express router extension for RESTful API's.",
   "main": "index.js",
   "scripts": {
@@ -26,12 +26,12 @@
     "ejs": "^2.4.1",
     "express": "^4.13.4",
     "google-caja": "0.0.2",
-    "rimraf": "^2.5.2",
     "sugar": "^1.4.1",
     "validator": "^5.1.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^2.4.5"
+    "mocha": "^2.4.5",
+    "rimraf": "^2.5.2"
   }
 }

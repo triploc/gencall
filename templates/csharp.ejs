@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // Auto-Generated at <%= new Date() %>
 ////////////////////////////////////////////////////////////////
-namespace Sup.Client
+namespace Client
 {
 	import System;
 	import System.Collections.Generic;
@@ -17,29 +17,28 @@ namespace Sup.Client
 		public static string BaseUrl = "<%= request.url %>";
 		public static string Credentials { get; set; }
 
-<%
+<%_
 	for (var index in request.response.Results.Values)
 	{
 		var resource = request.response.Results.Values[index];
-%>
+_%>
 		/// <summary><%= resource.interface.description %></summary>
-<%
+<%_
 	for (var index in resource.interface.parameters)
 	{
 		var input = resource.interface.parameters[index];
-%>		/// <param name="<%= input.name %>"><%= "" + input.description %></param>
-<%	
+_%>		/// <param name="<%= input.name %>"><%= "" + input.description %></param>
+<%_	
 	}
-%>		public static dynamic <%= resource.interface.name.replace(" ", "") %>(<%= '' /*string.Join(", ", resource.Inputs.Select(i => CSharpType(i) + " " + i.Name))*/ %>)
+_%>		public static dynamic <%= resource.interface.name.replace(" ", "") %>(<%= '' /*string.Join(", ", resource.Inputs.Select(i => CSharpType(i) + " " + i.Name))*/ %>)
 		{
 			using (WebClient client = new WebClient())
 			{
 				return JObject.Parse(client.DownloadString(BaseUrl.Trim('/') + "<%= resource.interface.path %>.json"));
 			}
 		}
-
-<%
+<%_
 	}
-%>
+_%>
 	}
 }

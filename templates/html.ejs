@@ -8,28 +8,103 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     </head>
     <body>
-        <div style="margin: 20px;">
-            <% schema.forEach(function(call) { %>
-            <div class="call panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><%= call.remoteName %></h3>
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">
+                        <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                        &nbsp;
+                        <b><em>Documentation</em></b>
+                    </a>
                 </div>
-                <div class="panel-body">
-                    <div><%= call.description %></div>
-                    <ul>
-                        <%_ call.routes.forEach(function(route) { _%>
-                        <li><%= route.first().toUpperCase() + " " + route.last() %></li>
-                        <%_ }) _%>
-                    </ul>
-                    <%_ Object.keys(call.inputs).forEach(function(name) { _%>
-                    <div>
-                        <b><%= name %></b>
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <form class="navbar-form navbar-left hidden-xs col-6" role="search">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Search">
+                        </div>
+                    </form>
+                    <div class="navbar-right">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    Docs <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#"><b><small>Human</small></b></a></li>
+                                    <li><a href="#">HTML</a></li>
+                                    <li><a href="#">Markdown</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="#"><b><small>Machine</small></b></a></li>
+                                    <li><a href="#">WSDL</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    Clients <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#"><b><small>Javascript</small></b></a></li>
+                                    <li><a href="#">jQuery</a></li>
+                                    <li><a href="#">AngularJS</a></li>
+                                    <li><a href="#">Node.js</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="#"><b><small>JRE</small></b></a></li>
+                                    <li><a href="#">Java</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="#"><b><small>.NET</small></b></a></li>
+                                    <li><a href="#">C#</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="nav navbar-nav">
+                            <li><a href="#">Logout</a></li>
+                        </ul>
                     </div>
-                    <%_ }) _%>
                 </div>
             </div>
-            <% }) %>
+        </nav>
+        
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12">
+                    <%_
+                        routers.forEach(function(router) { 
+                            router.calls.forEach(function(call) { 
+                    _%>
+                    <div class="call panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><%= call.title %></h3>
+                        </div>
+                        <div class="panel-body">
+                            <div><%= call.description %></div>
+                            <ul>
+                                <%_ call.routes.forEach(function(route) { _%>
+                                <li><%= route.first().toUpperCase() + " " + route.last() %></li>
+                                <%_ }) _%>
+                            </ul>
+                            <%_ Object.keys(call.inputs).forEach(function(name) { _%>
+                            <div>
+                                <b><%= name %></b>
+                            </div>
+                            <%_ }) _%>
+                        </div>
+                    </div>
+                    <%_ 
+                            });
+                        });
+                    _%>                
+                </div>
+            </div>
         </div>
+
         <h6 class="text-center text-muted">
             <small>Auto-Generated at <%= new Date() %>.</small>
         </h6>

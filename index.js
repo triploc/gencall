@@ -6,6 +6,8 @@ var express = require("express"),
     ejs = require("ejs"),
     fs = require("fs");
 
+exports.routers = [ ];
+
 exports.router = function(options) {
     var r = express.Router(options);
     
@@ -19,34 +21,21 @@ exports.router = function(options) {
         return r;
     };
     
-    r.schema = [ ];
-    
-    r.client = function(lang, cb) {
-        var format = lang.toLowerCase(),
-            filename = __dirname + "/templates/" + format + ".ejs";
-
-        fs.readFile(filename, function(err, data) {
-            if (err) cb(err);
-            else {
-                var output = null;
-                try {
-                    output = ejs.render(data.toString(), r, { filename: filename });
-                }
-                catch (ex) {
-                    cb(ex);
-                    return;
-                }
-
-                cb(null, output);
-            }
-        });
+    r.attachTo = function(parent, path) {
+        r.path = path;
+        parent.use(path, r);
     };
+    
+    r.calls = [ ];
     
     r.call = function() {
-        r.schema.push(new Call(r));
-        return r.schema.last();
+        var call = new Call(r);
+        call.router = r;
+        r.calls.push(call);
+        return call;
     };
     
+    exports.routers.push(r);
     return r;
 };
 
@@ -393,3 +382,31 @@ function validateInput(key, input, value, errors) {
         !input.custom(value, errors);
     }
 }
+
+exports.autoGenerate = function(template, options, cb) {
+    template = template.toLowerCase();
+    if (cb == null && Object.isFunction(options)) {
+        cb = options;
+        options = { };
+    }
+    
+    var filename = __dirname + "/templates/" + template + ".ejs";
+    fs.readFile(filename, function(err, data) {
+        if (err) cb(err);
+        else {
+            var output = null;
+            try {
+                output = ejs.render(data.toString(), { 
+                    routers: exports.routers,
+                    options: options
+                }, { filename: filename });
+            }
+            catch (ex) {
+                cb(ex);
+                return;
+            }
+
+            cb(null, output);
+        }
+    });
+};

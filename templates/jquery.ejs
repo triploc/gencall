@@ -1,6 +1,6 @@
 function _rpc_(method, url, arguments, cb) {
     $.ajax({
-        method: method,
+        method: method.toUpperCase(),
         url: url,
         data: arguments,
         dataType: "json",
