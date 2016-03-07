@@ -1,45 +1,17 @@
-/**
- *  Auto-Generated at <%= new Date() %>.
- */
+<%_ function printCall(route, inputs) { _%>
+function(<%= Object.keys(inputs).join(', ') %>, cb) {
+    _rpc_("<%= route[0] %>", "<%= route[1] %>", { <%= Object.keys(inputs).map(function(key) { return key + ": " + key }).join(', ') %> }, cb);
+}
+<%_ } _%>
+
 <%_
     routers.forEach(function(router) {
-        router.calls.forEach(function(interface) {
-            if (interface.routes.length > 1) {
+        router.calls.forEach(function(call) {
+            call.routes.forEach(function(route) {
 _%>
-function <%= interface.remoteName || interface.routes.last().parameterize().camelize(false) %>(params, cb) {
-    _rpc_("<%= interface.routes.first() %>", "<%= interface.routes.last() %>", params, cb);
-}
+<%= printCall(route, call.inputs) %>
 <%_
-            }
-            else {
-                var methods = interface.routes.groupBy((r) => { return r.last(); }),
-                    routes = Object.keys(methods);
-
-                if (routes.length == 1) {
-_%>
-var <%= interface.remoteName || routes.first().parameterize().camelize(false) %> = {
-<%_ methods[routes.first()].forEach(function(route) { _%>
-    <%= route.first() %>: function(params, cb) {
-        _rpc_("<%= route.first() %>", "<%= route.last() %>", params, cb);
-    },
-<%_ }) _%>
-};
-<%_
-                }
-                else {
-                    routes.forEach(function(path) {
-_%>
-var <%= path.parameterize().camelize(false) %> = {
-<%_ methods[path].forEach(function(route) { _%>
-    <%= route.first() %>: function(params, cb) {
-        _rpc_("<%= route.first() %>", "<%= route.last() %>", params, cb);
-    },
-<%_ }) _%>
-};
-<%_
-                    });
-                }
-            }
+            });
         });
     });
 _%>

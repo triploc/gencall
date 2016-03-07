@@ -1,6 +1,11 @@
+// Code auto-generated at <%= new Date() %>.
+
+/**
+ *  Invokes remote endpoint.
+ */
 function _rpc_(method, url, arguments, cb) {
     $http({
-        method: method,
+        method: method.toUpperCase(),
         url: url,
         data: arguments,
         responseType: "json"
