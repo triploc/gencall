@@ -39,6 +39,17 @@ gencall.router({
 });
 ```
 
+__IMPORTANT!__ Don't use `app.use` or `router.use` ([full explanation below](#metadata)).  Instead, use `router.mount(parent, paths)`, which is a bottom up assembly method.
+
+```javascript
+var app = express(),
+    router = gencall.router(),
+    sub = gencall.router();
+    
+router.mount(app, "/app");
+sub.mount(router, "/sub");
+```
+
 The router object is a direct extension of the ExpressJS `Router` object.  So all the regular stuff works as expected.
 
 ```javascript
@@ -166,7 +177,40 @@ Validation behavior can be modified by overriding the `gencall.validated(req, re
 
 Security behavior can be modified by overriding the `gencall.secure(req, res, next)` method.  The default implementation assumes that `req.session.user` exists for an authenticated user and that `req.session.user.privileges` exists for authorization.  A response status of 401 or 403 are set and request processing is aborted on failure.
 
-## Metadata
+## Create Artifacts
+
+One of the most powerful features of Gentleman Caller is artifact creation.
+
+### gencall.autoGenerate(template, options, cb)
+
+Client code and documentation can be automatically generated from metadata and built-in templates.
+
+> __template__: *text* – the desired output format 
+> > html, jquery, angular, node, csharp, java
+>
+> __options__: *object* – a set of options specific to the template format
+
+### .name(name) and .describe(desc)
+
+Both `Router` and `Call` objects have `name` and `describe` methods which are used to generated documentation and client code.
+
+```javascript
+gencall
+    .router()
+    .name("app")
+    .describe("Contains main app routes.")
+    .call()
+        .name("app")
+        .describe("Main route.")
+        .get("/app")
+        .execute((req, res, next) => { });
+```
+
+### <a name="metadata">Metadata</a>
+
+Artifact creation is facilitates through a structural comprehension of the application.  Gentleman Caller tracks the assembly of routing logic and utilizes validation requirements to gain this insight.
+
+The major challenge is that `express.Router` has no sense of its place within an Express application.  It does not know how it is `use`'d, so we do not know how to formulate a full URL path to reach an endpoint.  To get around this, Gentleman Caller implements a `router.mount` method, which links a router to a `parent` and stores the `mountpath`.  This allows a `gencall.router` to implement a `router.paths()` method that traverses up the router's ancestry and returns an array of antecedent URL paths.
 
 All routers that are created with the `gencall.router` are available through the `gencall.routers` array.
 
@@ -185,29 +229,3 @@ gencall.routers[0].calls[0].inputs;
 gencall.routers[0].calls[0].authenticated;
 gencall.routers[0].calls[0].privileges;
 ```
-
-### .name(name) and .describe(desc)
-
-Both `Router` and `Call` objects have `name` and `describe` methods which are used to generated documentation and client code.
-
-```javascript
-gencall
-    .router()
-    .name("app")
-    .describe("Contains main app routes.")
-    .call()
-        .name("app")
-        .describe("Main route.")
-        .get("/app")
-        .execute((req, res, next) => { });
-```
-
-### gencall.autoGenerate(template, options, cb)
-
-Client code and documentation can be automatically generated from metadata and built-in templates.
-
-> __template__: *text* – the desired output format 
-> > html, jquery, angular, node, csharp, java
->
-> __options__: *object* – a set of options specific to the template format
-

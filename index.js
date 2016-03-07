@@ -4,7 +4,9 @@ var express = require("express"),
     validator = require("validator"),
     sanitize = require('google-caja').sanitize,
     ejs = require("ejs"),
-    fs = require("fs");
+    fs = require("fs"),
+    path = require("path"),
+    cartesian = require('cartesian');
 
 exports.routers = [ ];
 
@@ -27,11 +29,6 @@ exports.router = function(options) {
         return me;
     };
     
-    r.attachTo = function(parent, path) {
-        r.path = path;
-        parent.use(path, r);
-    };
-    
     r.calls = [ ];
     
     r.call = function() {
@@ -39,6 +36,19 @@ exports.router = function(options) {
         call.router = r;
         r.calls.push(call);
         return call;
+    };
+    
+    r.mount = function(parent, path) {
+        r.mountpath = path;
+        r.parent = parent;
+        parent.use(path, r);
+    };
+    
+    r.paths = function() {
+        var paths = getMountPaths(r);
+        if (paths.length > 0) paths = (cartesian(paths).map((path) => { return path.join("/"); }));
+        if (paths.length > 0) return paths;
+        else return [ "/" ];
     };
     
     exports.routers.push(r);
@@ -78,6 +88,18 @@ function Call(router) {
     
     var me = this;
     
+    function addRoutes(methods, routes) {
+        routes = Array.create(routes).compact(true);
+        methods = Array.create(methods).compact(true);
+        
+        if (!me.title) {
+            me.title = routes.first().replace(/\/|\:/gi, " ").compact().titleize().trim();
+        }
+        
+        routes = cartesian([ methods, routes ]);
+        me.routes.add(routes);
+    }
+    
     this.routes = [ ];
     
     this.name = function(name) {
@@ -102,52 +124,52 @@ function Call(router) {
     };
     
     this.all = this.ALL = function() {
-        me.routes.add([ "all" ].zip(Array.create(arguments).compact(true)));
+        addRoutes("all", arguments);
         return me;
     };
     
     this.get = this.GET = function() {
-        me.routes.add([ "get" ].zip(Array.create(arguments).compact(true)));
+        addRoutes("get", arguments);
         return me;
     };
     
     this.getpost = this.GETPOST = function() {
-        me.routes.add([ "get", "post" ].zip(Array.create(arguments).compact(true)));
+        addRoutes([ "get", "post" ], arguments);
         return me;
     };
     
     this.post = this.POST = function() {
-        me.routes.add([ "post" ].zip(Array.create(arguments).compact(true)));
+        addRoutes("post", arguments);
         return me;
     };
     
     this.put = this.PUT = function() {
-        me.routes.add([ "put" ].zip(Array.create(arguments).compact(true)));
+        addRoutes("put", arguments);
         return me;
     };
     
     this.patch = this.PATCH = function() {
-        me.routes.add([ "patch" ].zip(Array.create(arguments).compact(true)));
+        addRoutes("patch", arguments);
         return me;
     };
     
     this.delete = this.DELETE = function() {
-        me.routes.add([ "delete" ].zip(Array.create(arguments).compact(true)));
+        addRoutes("delete", arguments);
         return me;
     };
     
     this.head = this.HEAD = function() {
-        me.routes.add([ "head" ].zip(Array.create(arguments).compact(true)));
+        addRoutes("head", arguments);
         return me;
     };
     
     this.options = this.OPTIONS = function() {
-        me.routes.add([ "options" ].zip(Array.create(arguments).compact(true)));
+        addRoutes("options", arguments);
         return me;
     };
     
     this.trace = this.TRACE = function() {
-        me.routes.add([ "trace" ].zip(Array.create(arguments).compact(true)));
+        addRoutes("trace", arguments);
         return me;
     };
     
@@ -175,7 +197,6 @@ function Call(router) {
 
 function validateRequest(req, res, next) {
     var inputs = req.inputs, 
-        output = { }, 
         errors = [ ],
         abort = false;
     
@@ -187,7 +208,7 @@ function validateRequest(req, res, next) {
         if (req.params && req.params[key]) value = req.params[key];
         else if (req.query && req.query[key]) value = req.query[key];
         else if (req.body && req.body[key]) value = req.body[key];
-        output[key] = value;
+        req.params[key] = value;
         
         validateInput(key, input, value, err);
         
@@ -198,7 +219,6 @@ function validateRequest(req, res, next) {
     });
     
     req.errors = errors;
-    req.params = output;
     req.abort = abort;
     
     next();
@@ -446,7 +466,8 @@ exports.autoGenerate = function(template, options, cb) {
             try {
                 output = ejs.render(data.toString(), { 
                     routers: exports.routers,
-                    options: options
+                    options: options,
+                    path: path
                 }, { filename: filename });
             }
             catch (ex) {
@@ -458,3 +479,17 @@ exports.autoGenerate = function(template, options, cb) {
         }
     });
 };
+
+function getMountPaths(app) {
+    var paths = [ ];
+    if (app.mountpath) {
+        if (!Array.isArray(app.mountpath)) {
+            app.mountpath = [ app.mountpath ];
+        }
+        
+        paths.push(app.mountpath);
+    }
+    
+    if (app.parent) getMountPaths(app.parent).forEach((p) => { paths.push(p); });
+    return paths;
+}

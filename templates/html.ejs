@@ -115,7 +115,7 @@
                     <h1>
                         <%= router.namespace || "Router" %>
                         <small>
-                            <%= router.path || "/" %>
+                            <%= router.paths().join(', ') %>
                         </small>
                     </h1>
                     <p>
@@ -131,7 +131,6 @@
                     </p>
                     <%_
                         router.calls.forEach(function(call) { 
-                            var title = call.title || call.routes.first().last().replace(/\//gi, "-").titleize().trim();
                     _%>
                     <div class="call panel panel-default">
                         <div class="panel-heading">
@@ -142,7 +141,7 @@
                             _%>
                                 <span class="label label-danger pull-right"><%= privileges ? privileges.join(',') : "Secure" %></span>
                             <%_ } _%>
-                            <div class="panel-title"><b><%= title %></b></div>
+                            <div class="panel-title"><b><%= call.title %></b></div>
                         </div>
                         <div class="panel-body">
                             <%_ if (call.description) { _%>
@@ -156,9 +155,15 @@
                             <%_ } _%>
                             <h6 class="text-uppercase"><small><b>Routes</b></small></h6>
                             <ul>
-                                <%_ call.routes.forEach(function(route) { _%>
-                                <li><b><%= route.first().toUpperCase() + " " + (router.path || "") + route.last() %></b></li>
-                                <%_ }) _%>
+                                <%_ 
+                                    call.routes.forEach(function(route) { 
+                                        router.paths().forEach(function(path) {
+                                _%>
+                                <li><b><%= route.first().toUpperCase() + " " + (path == "/" ? "" : path) + route.last() %></b></li>
+                                <%_ 
+                                        }) 
+                                    })
+                                _%>
                             </ul>
                             <h6 class="text-uppercase"><small><b>Parameters</b></small></h6>
                             <ul>
