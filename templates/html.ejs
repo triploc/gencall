@@ -135,13 +135,17 @@
                     <div class="call panel panel-default">
                         <div class="panel-heading">
                             <%_ 
-                                if (call.autenticated || router.authenticated) { 
-                                    var privileges = call.privileges;
-                                    if (router.privileges) privileges = router.privileges.union(call.privileges).compact(true);
+                                if (call.authenticated || router.authenticated) { 
+                                    var privileges = call.privileges || [ ];
+                                    if (router.privileges) {
+                                        privileges = router.privileges.union(privileges).compact(true);
+                                    }
                             _%>
-                                <span class="label label-danger pull-right"><%= privileges ? privileges.join(',') : "Secure" %></span>
+                            <span class="label label-danger pull-right text-uppercase"><%= privileges.length ? privileges.join(',') : "Secure" %></span>
                             <%_ } _%>
-                            <div class="panel-title"><b><%= call.title %></b></div>
+                            <div class="panel-title">
+                                <b><%= call.title %></b>
+                            </div>
                         </div>
                         <div class="panel-body">
                             <%_ if (call.description) { _%>
@@ -150,44 +154,49 @@
                             </div>
                             <%_ } _%>
                             <h6 class="text-uppercase"><small><b>Routes</b></small></h6>
-                            <ul>
-                                <%_ 
-                                    call.routes.forEach(function(route) { 
-                                        router.paths().forEach(function(path) {
-                                _%>
-                                <li><b><%= route.first().toUpperCase() + " " + (path == "/" ? "" : path) + route.last() %></b></li>
-                                <%_ 
-                                        }) 
-                                    })
-                                _%>
-                            </ul>
-                            <h6 class="text-uppercase"><small><b>Parameters</b></small></h6>
-                            <ul>
+                            <div class="btn-group" data-toggle="buttons">
+                            <%_ 
+                                call.routes.forEach(function(route) { 
+                                    router.paths().forEach(function(path) {
+                            _%>
+                                <label class="btn btn-default">
+                                    <input type="radio" name="<%= call.title.parameterize() %>" autocomplete="off">
+                                    <%= route.first().toUpperCase() + " " + (path == "/" ? "" : path) + route.last() %>
+                                </label>
+                            <%_ 
+                                    }) 
+                                })
+                            _%>
+                            </div>
+                            <p>&nbsp;</p>
+                            <h6 class="text-uppercase"><small><b>Params</b></small></h6>
+                            <form>
+                                <div class="form-group">
                             <%_ 
                                 Object.keys(call.inputs).forEach(function(name) { 
                                     var input = call.inputs[name];
                             _%>
-                                <li>
-                                    <b><%= name %></b>
-                                    <%_ if (input.type) { _%>
-                                    <span class="label label-success pull-right text-uppercase"><%= input.type %></span>
-                                    <%_ } _%>
-                                    <%_ if (input.required) { _%>
-                                    <span class="label label-warning pull-right text-uppercase">required</span>
-                                    <%_ } _%>
-                                    <%_ if (input.abort) { _%>
-                                    <span class="label label-danger pull-right text-uppercase">abort</span>
-                                    <%_ } _%>
-                                    <%_ if (input.description) { _%>
-                                    <ul>
-                                        <li><em><%= input.description %></em></li>
-                                    </ul>
-                                    <%_ } _%>
-                                </li>
+                                    <input type="text" class="form-control" placeholder="<%= name %>">
+                                    <div>
+                                        <%_ if (input.type) { _%>
+                                        <span class="label label-success pull-right text-uppercase"><%= input.type %></span>
+                                        <%_ } _%>
+                                        <%_ if (input.required) { _%>
+                                        <span class="label label-warning pull-right text-uppercase">required</span>
+                                        <%_ } _%>
+                                        <%_ if (input.abort) { _%>
+                                        <span class="label label-danger pull-right text-uppercase">abort</span>
+                                        <%_ } _%>
+                                        <%_ if (input.description) { _%>
+                                        <p><em><%= input.description %></em></p>
+                                        <%_ } _%>
+                                    </div>
                             <%_ 
                                 }) 
                             _%>
-                            </ul>
+                                    <button type="submit" class="btn btn-default">Send Request</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                     <%_ 

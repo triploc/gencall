@@ -26,7 +26,7 @@ describe('Router', function() {
     });
 
     it("can register a call", function() {
-        router.call().get("/test").params({
+        router.call().secure().getpost("/test").params({
             phone: { type: "phone", required: true, description: "mobile phone number" },
             email: { type: "email", description: "mail email address" }
         });

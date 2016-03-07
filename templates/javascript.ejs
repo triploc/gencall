@@ -1,17 +1,33 @@
-<%_ function printCall(route, inputs) { _%>
-function(<%= Object.keys(inputs).join(', ') %>, cb) {
-    _rpc_("<%= route[0] %>", "<%= route[1] %>", { <%= Object.keys(inputs).map(function(key) { return key + ": " + key }).join(', ') %> }, cb);
+<%_
+
+function printCall(name, route, inputs, pre) {
+    return (pre ? name + " = " : "") + `function${ pre ? "" : " " + name }(${ Object.keys(inputs).join(', ') }, cb) {\n` +
+    `    gencall("${ route[0] }", "${ route[1] }", { ${ Object.keys(inputs).map(function(key) { return key + ": " + key }).join(', ') } }, cb);\n` +
+    `}`;
 }
-<%_ } _%>
+
+_%>
+
 
 <%_
+    routers.map("namespace").unique().compact(true).forEach(function(namespace) {
+_%>
+var <%= namespace %> = { };
+<%_
+    })
+
     routers.forEach(function(router) {
         router.calls.forEach(function(call) {
-            call.routes.forEach(function(route) {
+            if (call.routes.length > 0) {
 _%>
-<%= printCall(route, call.inputs) %>
+
 <%_
-            });
+                call.routes.forEach(function(route) {
+_%>
+
+<%_
+                });
+            }
         });
     });
 _%>

@@ -3,7 +3,7 @@
 /**
  *  Invokes remote endpoint.
  */
-function _rpc_(method, url, arguments, cb) {
+function gencall(method, url, arguments, cb) {
     $.ajax({
         method: method.toUpperCase(),
         url: url,
