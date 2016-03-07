@@ -96,6 +96,13 @@ function Call(router) {
             me.title = routes.first().replace(/\/|\:/gi, " ").compact().titleize().trim();
         }
         
+        var inputs = { };
+        routes.map((r) => { 
+            return r.split("/").filter(/\:.*/gi); 
+        }).flatten().compact(true).unique().forEach((p) => { 
+            inputs[p.from(1)] = { required: true };
+        });
+        
         routes = cartesian([ methods, routes ]);
         me.routes.add(routes);
     }
@@ -119,7 +126,7 @@ function Call(router) {
     };
     
     this.params = function(params) {
-        me.inputs = params;
+        me.inputs = Object.merge(me.inputs || { }, params, true);
         return me;
     };
     
