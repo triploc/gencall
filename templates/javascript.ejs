@@ -1,33 +1,58 @@
 <%_
 
-function printCall(name, route, inputs, pre) {
-    return (pre ? name + " = " : "") + `function${ pre ? "" : " " + name }(${ Object.keys(inputs).join(', ') }, cb) {\n` +
-    `    gencall("${ route[0] }", "${ route[1] }", { ${ Object.keys(inputs).map(function(key) { return key + ": " + key }).join(', ') } }, cb);\n` +
-    `}`;
+var fn = options.requestFunction;
+function printCall(name, route, inputs) {
+    return `${name} = function(${ Object.keys(inputs).join(', ') }, cb) {\n` +
+    `    ${fn}("${ route[0] }", "${ route[1] }", { ${ Object.keys(inputs).map(function(key) { return key + ": " + key }).join(', ') } }, cb);\n` +
+    `};`;
 }
 
-_%>
-
-
-<%_
-    routers.map("namespace").unique().compact(true).forEach(function(namespace) {
-_%>
-var <%= namespace %> = { };
-<%_
-    })
-
-    routers.forEach(function(router) {
-        router.calls.forEach(function(call) {
-            if (call.routes.length > 0) {
-_%>
-
-<%_
-                call.routes.forEach(function(route) {
-_%>
-
-<%_
-                });
-            }
-        });
+function printDocs(name, desc, inputs) {
+    var doc = `/**\n` +
+        (desc ? ` * @description ${desc}\n` : "") +
+        ` * @function ${name}\n`;
+    
+    Object.keys(inputs).forEach(function(key) {
+        doc += ` * @param ${key}${ inputs[key].description ? " - " + inputs[key].description : "" }\n`    
     });
+    
+    doc += ` * @param {requestCallback} cb Callback take an error and the results of the request.\n */`;
+    return doc
+}
+
+var namespaces = [ ];
+routers.forEach(function(router) {
+    var namespace = null;
+    if (router.namespace && router.namespace.trim() != "") {
+        namespace = namespace.compact().parameterize().camelize(true).trim();
+        if (namespaces.indexOf(namespace) < 0) {
+            namespaces.push(namespace);
+_%>
+
+/**
+<%_ if (router.descriptions) { _%> * @description <%= router.description %><%_ } _%>
+ * @namespace <%= router.namespace %>
+ */
+<%- container + "." + namespace %> = { };
+<%_
+        }
+    }
+    
+    router.calls.forEach(function(call) {
+        if (call.routes.length) {
+_%>
+<%- printDocs(call.title, call.description, call.inputs) %>
+<%- (namespace ? container + "." + namespace : container) + "." + printCall(call.title, call.routes.first(), call.inputs) %>
+
+<%_
+            call.routes.forEach(function(route) {
+_%>
+<%- printDocs(call.title + "." + route.first().toLowerCase(), call.description, call.inputs) %>
+<%- container + "." + (namespace ? namespace + "." : "") + call.title + "." + printCall(route.first().toLowerCase(), route, call.inputs) %>
+
+<%_
+            });
+        }
+    });
+})
 _%>

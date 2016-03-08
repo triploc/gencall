@@ -1,9 +1,18 @@
-// Code auto-generated at <%= new Date() %>.
+/**
+ * @description Client auto-generated at <%= new Date() %>.
+ * @namespace client
+ */
+var client = { };
 
 /**
- *  Invokes remote endpoint.
+ * @description Invokes remote endpoint.
+ * @function <%= options.requestFunction %>
+ * @param {string} method - HTTP verb to be used.
+ * @param {string} url - URL endpoint of the request.
+ * @param {Object} arguments - Parameters to the request.
+ * @param {requestCallback} cb - Callback take an error and the results of the request.
  */
-function gencall(method, url, arguments, cb) {
+function <%= options.requestFunction %>(method, url, arguments, cb) {
     $.ajax({
         method: method.toUpperCase(),
         url: url,
@@ -20,4 +29,4 @@ function gencall(method, url, arguments, cb) {
     });
 }
 
-<%- include('javascript') %>
+<%- include('javascript', { container: "client" }) %>

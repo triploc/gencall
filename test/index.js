@@ -65,6 +65,7 @@ describe('Router', function() {
         gencall.autoGenerate("json", function(err, json) {
             if (err) throw err;
             else {
+                JSON.parse(json);
                 fs.writeFile(outputDir + "/schema.json", json, done);
             }
         })
@@ -74,6 +75,7 @@ describe('Router', function() {
         gencall.autoGenerate("jquery", function(err, js) {
             if (err) throw err;
             else {
+                eval(js);
                 fs.writeFile(outputDir + "/jquery.js", js, done);
             }
         })
@@ -83,6 +85,7 @@ describe('Router', function() {
         gencall.autoGenerate("angular", function(err, js) {
             if (err) throw err;
             else {
+                eval(js);
                 fs.writeFile(outputDir + "/angular.js", js, done);
             }
         })
@@ -92,6 +95,7 @@ describe('Router', function() {
         gencall.autoGenerate("node", function(err, js) {
             if (err) throw err;
             else {
+                eval(js);
                 fs.writeFile(outputDir + "/node.js", js, done);
             }
         })

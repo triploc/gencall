@@ -1,9 +1,49 @@
-// Code auto-generated at <%= new Date() %>.
+/**
+ * @description Client auto-generated at <%= new Date() %>.
+ * @module client
+ */
 
-var http = require("http"),
-    https = require("https");
+var request = require("request");
 
-function gencall(method, url, data, cb) {
+/**
+ * @description Invokes remote endpoint.
+ * @function <%= options.requestFunction %>
+ * @param {string} method - HTTP verb to be used.
+ * @param {string} url - URL endpoint of the request.
+ * @param {Object} arguments - Parameters to the request.
+ * @param {requestCallback} cb - Callback take an error and the results of the request.
+ */
+function <%= options.requestFunction %>(method, url, data, cb) {
+    var options = {
+        method: method,
+        baseUrl: exports.domain,
+        url: url,
+        json: true
+    };
 
+    if (method.toLowerCase() == "get") options.qs = data;
+    else options.body = data;
+
+    request(options, function(err, response, body){
+        if (err) {
+            cb(err);
+        }
+        else if (response.statusCode != 200) {
+            cb(new Error("HTTP status code " + response.statusCode), body);
+        }
+        else {
+            cb(null, body);
+        }
+    });
 }
 
+/**
+ * @description Sets base URL for requests.
+ * @function setDomain
+ * @param {string} domain - Base URL.
+ */
+exports.setDomain = function(domain) {
+    exports.domain = domain;
+};
+
+<%- include('javascript', { container: "exports" }) %>

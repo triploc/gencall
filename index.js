@@ -471,6 +471,10 @@ exports.autoGenerate = function(template, options, cb) {
         else {
             var output = null;
             try {
+                if (!options.requestFunction) {
+                    options.requestFunction = "gencall";
+                }
+                
                 output = ejs.render(data.toString(), { 
                     routers: exports.routers,
                     options: options,
