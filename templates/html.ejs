@@ -128,16 +128,16 @@
                     <%_ } else { _%>
                         <em class="text-muted">No description.</em>
                     <%_ } _%>
-                        <span class="label label-primary text-uppercase pull-right">
-                            <span class="glyphicon glyphicon-duplicate"></span>
-                            <%= router.calls.length %> call(s)
-                        </span>
                         <%_ if (router.autenticated) { _%>
                             <span class="label label-danger text-uppercase pull-right">
                                 <span class="glyphicon glyphicon-lock"></span>
                                 <%= router.privileges ? router.privileges.join(',') : "Secure" %>
                             </span>
                         <%_ } _%>
+                        <span class="label label-primary text-uppercase pull-right">
+                            <span class="glyphicon glyphicon-duplicate"></span>
+                            <%= router.calls.length %> call(s)
+                        </span>
                     </p>
                     <%_
                         router.calls.forEach(function(call) { 
@@ -151,7 +151,7 @@
                                         privileges = router.privileges.union(privileges).compact(true);
                                     }
                             _%>
-                            <span class="label label-danger pull-right text-uppercase">
+                            <span class="label label-danger pull-right text-uppercase" style="margin-top: 12px;">
                                 <span class="glyphicon glyphicon-lock"></span>
                                 <%= privileges.length ? privileges.join(',') : "Secure" %>
                             </span>
