@@ -27,7 +27,7 @@ describe('Router', function() {
 
     it("can register a call", function() {
         router.call().secure().getpost("/test").params({
-            phone: { type: "phone", required: true, description: "mobile phone number" },
+            phone: { type: "phone", required: true, description: "mobile phone number", abort: true },
             email: { type: "email", description: "mail email address" }
         });
     });
@@ -47,6 +47,15 @@ describe('Router', function() {
             if (err) throw err;
             else {
                 fs.writeFile(outputDir + "/doc.html", html, done);
+            }
+        })
+    });
+    
+    it("can generate JSON schema", function(done) {
+        gencall.autoGenerate("json", function(err, json) {
+            if (err) throw err;
+            else {
+                fs.writeFile(outputDir + "/schema.json", json, done);
             }
         })
     });

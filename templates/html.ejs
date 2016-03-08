@@ -113,7 +113,10 @@
             <div class="row">
                 <div class="col-xs-12">
                     <h1>
-                        <%= router.namespace || "Router" %>
+                        <small>
+                            <span class="glyphicon glyphicon-folder-open"></span>&nbsp;
+                        </small>
+                        <%= router.namespace || "" %>
                         <small>
                             <%= router.paths().join(', ') %>
                         </small>
@@ -124,9 +127,15 @@
                     <%_ } else { _%>
                         <em class="text-muted">No description.</em>
                     <%_ } _%>
-                        <span class="label label-primary text-uppercase pull-right"><%= router.calls.length %> call(s)</span>
+                        <span class="label label-primary text-uppercase pull-right">
+                            <span class="glyphicon glyphicon-duplicate"></span>
+                            <%= router.calls.length %> call(s)
+                        </span>
                         <%_ if (router.autenticated) { _%>
-                            <span class="label label-danger text-uppercase pull-right"><%= router.privileges ? router.privileges.join(',') : "Secure" %></span>
+                            <span class="label label-danger text-uppercase pull-right">
+                                <span class="glyphicon glyphicon-lock"></span>
+                                <%= router.privileges ? router.privileges.join(',') : "Secure" %>
+                            </span>
                         <%_ } _%>
                     </p>
                     <%_
@@ -141,11 +150,17 @@
                                         privileges = router.privileges.union(privileges).compact(true);
                                     }
                             _%>
-                            <span class="label label-danger pull-right text-uppercase"><%= privileges.length ? privileges.join(',') : "Secure" %></span>
+                            <span class="label label-danger pull-right text-uppercase">
+                                <span class="glyphicon glyphicon-lock"></span>
+                                <%= privileges.length ? privileges.join(',') : "Secure" %>
+                            </span>
                             <%_ } _%>
-                            <div class="panel-title">
+                            <h5>
                                 <b><%= call.title %></b>
-                            </div>
+                                <small class="text-muted">
+                                    (<%= Object.keys(call.inputs).join(', ') %>)
+                                </small>
+                            </h5>
                         </div>
                         <div class="panel-body">
                             <%_ if (call.description) { _%>
@@ -153,13 +168,19 @@
                                 <%= call.description %>
                             </div>
                             <%_ } _%>
-                            <h6 class="text-uppercase"><small><b>Routes</b></small></h6>
+                            <h6 class="text-uppercase">
+                                <small>
+                                    <span class="glyphicon glyphicon-link"></span>
+                                    <b>Routes</b>
+                                </small>
+                            </h6>
                             <div class="btn-group" data-toggle="buttons">
                             <%_ 
                                 call.routes.forEach(function(route) { 
                                     router.paths().forEach(function(path) {
                             _%>
                                 <label class="btn btn-default">
+                                    <span class="glyphicon glyphicon-random text-muted"></span>&nbsp;
                                     <input type="radio" name="<%= call.title.parameterize() %>" autocomplete="off">
                                     <%= route.first().toUpperCase() + " " + (path == "/" ? "" : path) + route.last() %>
                                 </label>
@@ -169,7 +190,12 @@
                             _%>
                             </div>
                             <p>&nbsp;</p>
-                            <h6 class="text-uppercase"><small><b>Params</b></small></h6>
+                            <h6 class="text-uppercase">
+                                <small>
+                                    <span class="glyphicon glyphicon-edit"></span>
+                                    <b>Params</b>
+                                </small>
+                            </h6>
                             <form>
                                 <div class="form-group">
                             <%_ 
@@ -179,22 +205,64 @@
                                     <input type="text" class="form-control" placeholder="<%= name %>">
                                     <div>
                                         <%_ if (input.type) { _%>
-                                        <span class="label label-success pull-right text-uppercase"><%= input.type %></span>
+                                        <span class="label label-success pull-right text-uppercase">
+                                            <%_ 
+                                                var icons = { 
+                                                    phone: "glyphicon glyphicon-earphone",
+                                                    email: "glyphicon glyphicon-envelope",
+                                                    uuid: "glyphicon glyphicon-qrcode",
+                                                    date: "glyphicon glyphicon-calendar",
+                                                    currency: "glyphicon glyphicon-usd",
+                                                    url: "glyphicon glyphicon-globe",
+                                                    domain: "glyphicon glyphicon-globe",
+                                                    ip: "glyphicon glyphicon-globe",
+                                                    mac: "glyphicon glyphicon-globe",
+                                                    text: "glyphicon glyphicons-text-background",
+                                                    json: "glyphicon glyphicon-gift",
+                                                    integer: "glyphicons-hash",
+                                                    number: "glyphicons-hash",
+                                                    boolean: "glyphicon glyphicon-check",
+                                                    creditcard: "glyphicon glyphicons-credit-card",
+                                                    ascii: "glyphicon glyphicons-text-color",
+                                                    alphanumeric: "glyphicon glyphicons-text-background",
+                                                    alpha: "glyphicon glyphicons-text-background",
+                                                    hexcolor: "glyphicon glyphicon-pencil",
+                                                    location: "glyphicon glyphicon-map-marker"
+                                                };
+                                            
+                                                if (icons[input.type]) {
+                                            _%>
+                                            <span class="<%= icons[input.type] %>"></span>
+                                            <%_ } _%>
+                                            <%= input.type %>
+                                        </span>
                                         <%_ } _%>
                                         <%_ if (input.required) { _%>
-                                        <span class="label label-warning pull-right text-uppercase">required</span>
+                                        <span class="label label-warning pull-right text-uppercase">
+                                            <span class="glyphicon glyphicon-ok"></span>
+                                            required
+                                        </span>
                                         <%_ } _%>
                                         <%_ if (input.abort) { _%>
-                                        <span class="label label-danger pull-right text-uppercase">abort</span>
+                                        <span class="label label-danger pull-right text-uppercase">
+                                            <span class="glyphicon glyphicon-warning-sign"></span>
+                                            critical
+                                        </span>
                                         <%_ } _%>
                                         <%_ if (input.description) { _%>
-                                        <p><em><%= input.description %></em></p>
+                                        <p>
+                                            <span class="glyphicon glyphicon-hand-right"></span>
+                                            <em><%= input.description %></em>
+                                        </p>
                                         <%_ } _%>
                                     </div>
                             <%_ 
                                 }) 
                             _%>
-                                    <button type="submit" class="btn btn-default">Send Request</button>
+                                    <button type="submit" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-flash"></span>&nbsp;
+                                        Test Request
+                                    </button>
                                 </div>
                             </form>
                         </div>

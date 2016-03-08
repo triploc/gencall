@@ -1,0 +1,10 @@
+<%- 
+    JSON.stringify(routers.map((r) => { 
+        return {
+            namespace: r.namespace,
+            description: r.description,
+            calls: r.calls,
+            paths: r.paths()
+        };
+    }), null, '\t') 
+%>
