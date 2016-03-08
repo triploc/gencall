@@ -24,6 +24,26 @@
                         }
                     }
                 }
+                
+                function showResults(results) {
+                    $('.results').html(JSON.stringify(results, null, '\t'));
+                    $('.modal').modal('show');
+                }
+                
+                $("form").on("submit", function(e){
+                    e.preventDefault();
+                });
+                
+                $(".test").on("click", function() {
+                    var params = { },
+                        fields = $(this).closest("form").serializeArray();
+                    
+                    fields.forEach(function(param) {
+                        params[param.name] = param.value;
+                    });
+                    
+                    showResults(params);
+                })
             });
         </script>
     </head>
@@ -182,9 +202,9 @@
                                     router.paths().forEach(function(path) {
                             _%>
                                 <label class="btn btn-default">
-                                    <span class="glyphicon glyphicon-random text-muted"></span>&nbsp;
                                     <input type="radio" name="<%= call.title.parameterize() %>" autocomplete="off">
-                                    <%= route.first().toUpperCase() + " " + (path == "/" ? "" : path) + route.last() %>
+                                    <span class="label label-default"><%= route.first().toUpperCase() %></span>&nbsp;
+                                    <%= (path == "/" ? "" : path) + route.last() %>
                                 </label>
                             <%_ 
                                     }) 
@@ -204,7 +224,7 @@
                                 Object.keys(call.inputs).forEach(function(name) { 
                                     var input = call.inputs[name];
                             _%>
-                                    <input type="text" class="form-control" placeholder="<%= name %>">
+                                    <input type="text" class="form-control" name="<%= name %>" placeholder="<%= name %>">
                                     <div>
                                         <%_ if (input.type) { _%>
                                         <span class="label label-success pull-right text-uppercase">
@@ -263,7 +283,7 @@
                             <%_ 
                                 }) 
                             _%>
-                                    <button type="submit" class="btn btn-default">
+                                    <button type="submit" class="btn btn-default test">
                                         <span class="glyphicon glyphicon-flash"></span>&nbsp;
                                         Test Request
                                     </button>
@@ -284,6 +304,25 @@
             });
         _%>
 
+        <div class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="gridSystemModalLabel">Results</h4>
+                    </div>
+                    <div class="modal-body">
+                        <pre class="pre-scrollable results">
+                        
+                        </pre>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <h6 class="text-center text-muted">
             <small>Auto-Generated at <%= new Date() %>.</small>
         </h6>
