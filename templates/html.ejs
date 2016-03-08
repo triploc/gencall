@@ -35,14 +35,28 @@
                 });
                 
                 $(".test").on("click", function() {
-                    var params = { },
+                    var selected = $(this).closest(".call").find(".urls .active"),
+                        method = selected.data("method"),
+                        url = selected.data("url"),
+                        params = { },
                         fields = $(this).closest("form").serializeArray();
                     
                     fields.forEach(function(param) {
                         params[param.name] = param.value;
                     });
                     
-                    showResults(params);
+                    $.ajax({
+                        method: method,
+                        url: url,
+                        data: params,
+                        dataType: "json",
+                        success: function(data, status, xhr) {
+                            showResults(data);
+                        },
+                        error: function(xhr, status, error) {
+                            showResults(xhr);
+                        }
+                    })
                 })
             });
         </script>
@@ -199,17 +213,19 @@
                                     <b>Routes</b>
                                 </small>
                             </h6>
-                            <div class="btn-group" data-toggle="buttons">
+                            <div class="btn-group urls" data-toggle="buttons">
                             <%_ 
+                                var checked = true;
                                 call.routes.forEach(function(route) { 
                                     router.paths().forEach(function(path) {
                             _%>
-                                <label class="btn btn-default">
-                                    <input type="radio" name="<%= call.title.parameterize() %>" autocomplete="off">
+                                <label class="btn btn-default <%= checked ? 'active' : '' %>" data-method="<%= route.first().toUpperCase() %>" data-url="<%= (path == "/" ? "" : path) + route.last() %>">
+                                    <input type="radio" name="url" autocomplete="off" <%= checked ? 'checked' : '' %>>
                                     <span class="label label-default"><%= route.first().toUpperCase() %></span>&nbsp;
                                     <%= (path == "/" ? "" : path) + route.last() %>
                                 </label>
                             <%_ 
+                                        checked = false;
                                     }) 
                                 })
                             _%>
@@ -286,7 +302,7 @@
                             <%_ 
                                 }) 
                             _%>
-                                    <button type="submit" class="btn btn-default test">
+                                    <button type="submit" class="btn btn-sm btn-default test">
                                         <span class="glyphicon glyphicon-flash"></span>&nbsp;
                                         Test Request
                                     </button>

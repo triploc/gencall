@@ -30,6 +30,16 @@ describe('Router', function() {
             phone: { type: "phone", required: true, description: "mobile phone number", abort: true },
             email: { type: "email", description: "mail email address" }
         });
+        
+        router.call().secure().getpost("/test2").params({
+            phone: { type: "phone", required: true, description: "mobile phone number", abort: true },
+            email: { type: "email", description: "mail email address" }
+        });
+        
+        router.call().secure().getpost("/test3").params({
+            phone: { type: "phone", required: true, description: "mobile phone number", abort: true },
+            email: { type: "email", description: "mail email address" }
+        });
     });
     
     it("can load examples", function(done) {
