@@ -137,6 +137,8 @@ __Metadata Parameters__
 > __description__: *text* – a description that can be used in generating documentation
 >
 > __abort__: *boolean* – determines if an invalid request aborts execution
+>
+> __error__: *text* – custom error message on failed validation
 
 __Recursive Processing__
 

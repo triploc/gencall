@@ -254,7 +254,7 @@ function validateInput(key, input, value, errors) {
     }
 
     if (input.required && (!value || value.trim() == "")) {
-        errors.push(`${key} cannot be missing.`);
+        errors.push(input.error || `${key} cannot be missing.`);
     }
     else if (!input.required && !value) {
         value = "";
@@ -298,7 +298,7 @@ function validateInput(key, input, value, errors) {
                 value = parseInt(value);
             }
             catch (ex) {
-                errors.push(`${key} is not an integer.`);
+                errors.push(input.error || `${key} is not an integer.`);
             }
         }
         else if (value && type == "number") {
@@ -306,7 +306,7 @@ function validateInput(key, input, value, errors) {
                 value = parseFloat(value);
             }
             catch (ex) {
-                errors.push(`${key} is not a number.`);
+                errors.push(input.error || `${key} is not a number.`);
             }
         }
         else if (value && type == "date") {
@@ -314,7 +314,7 @@ function validateInput(key, input, value, errors) {
                 value = Date.create(value);    
             }
             catch (ex) {
-                errors.push(`${key} is not a date.`);
+                errors.push(input.error || `${key} is not a date.`);
             }
         }
         else if (value && type == "json") {
@@ -322,7 +322,7 @@ function validateInput(key, input, value, errors) {
                 value = JSON.parse(value);    
             }
             catch (ex) {
-                errors.push(`${key} is not an object.`);
+                errors.push(input.error || `${key} is not an object.`);
             }
         }
         else if (value && type == "boolean") {
@@ -330,77 +330,77 @@ function validateInput(key, input, value, errors) {
         }
         else if (value && type == "uuid") {
             if (!validator.isUUID(value)) {
-                errors.push(`${key} is not a UUID.`);
+                errors.push(input.error || `${key} is not a UUID.`);
             }
         }
         else if (value && type == "email") {
             if (!validator.isEmail(value)) {
-                errors.push(`${key} is not an email address.`);
+                errors.push(input.error || `${key} is not an email address.`);
             }
         }
         else if (value && type == "domain") {
             if (!validator.isFQDN(value)) {
-                errors.push(`${key} is not a domain.`);
+                errors.push(input.error || `${key} is not a domain.`);
             }
         }
         else if (value && type == "url") {
             if (!validator.isURL(value)) {
-                errors.push(`${key} is not a URL.`);
+                errors.push(input.error || `${key} is not a URL.`);
             }
         }
         else if (value && type == "ip") {
             if (!validator.isIP(value)) {
-                errors.push(`${key} is not an IP address.`);
+                errors.push(input.error || `${key} is not an IP address.`);
             }
         }
         else if (value && type == "mac") {
             if (!validator.isMACAddress(value)) {
-                errors.push(`${key} is not a MAC address.`);
+                errors.push(input.error || `${key} is not a MAC address.`);
             }
         }
         else if (value && type == "phone") {
             if (!validator.isMobileNumber(value, input.locale)) {
-                errors.push(`${key} is not a phone.`);
+                errors.push(input.error || `${key} is not a phone.`);
             }
         }
         else if (value && type == "uuid") {
             if (!validator.isUUID(value)) {
-                errors.push(`${key} is not a unique identifier.`);
+                errors.push(input.error || `${key} is not a unique identifier.`);
             }
         }
         else if (value && type == "creditcard") {
             if (!validator.isCreditCard(value)) {
-                errors.push(`${key} is not a valid credit card number.`);
+                errors.push(input.error || `${key} is not a valid credit card number.`);
             }
         }
         else if (value && type == "base64") {
             if (!validator.isBase64(value)) {
-                errors.push(`${key} is not a base-64 string.`);
+                errors.push(input.error || `${key} is not a base-64 string.`);
             }
         }
         else if (value && type == "currency") {
             if (!validator.isCurrency(value)) {
-                errors.push(`${key} is not a currency.`);
+                errors.push(input.error || `${key} is not a currency.`);
             }
         }
         else if (value && type == "ascii") {
             if (!validator.isAscii(value)) {
-                errors.push(`${key} is not ascii text.`);
+                errors.push(input.error || `${key} is not ascii text.`);
             }
         }
         else if (value && type == "alphanumeric") {
             if (!validator.isAlphanumeric(value, input.locale)) {
-                errors.push(`${key} is not alphanumeric text.`);
+                errors.push(input.error || `${key} is not alphanumeric text.`);
             }
         }
         else if (value && type == "alpha") {
             if (!validator.isAlpha(value, input.locale)) {
-                errors.push(`${key} is not alphabetical text.`);
+                errors.push(input.error || `${key} is not alphabetical text.`);
             }
         }
         else if (value && type == "hexcolor") {
             if (!validator.isHexColor(value)) {
-                errors.push(`${key} is not a hex color.`);
+                errors.push(input.error || `${key} is not a hex color.`);
             }
         }
         else if (value && type == "location") {
@@ -410,39 +410,39 @@ function validateInput(key, input, value, errors) {
 
     if (input.min || input.max) {
         if (input.min && input.min >= value) {
-            errors.push(`${key} must be greater than ${input.min}.`);
+            errors.push(input.error || `${key} must be greater than ${input.min}.`);
         }
 
         if (input.max && input.max <= value) {
-            errors.push(`${key} must be less than ${input.max}.`);
+            errors.push(input.error || `${key} must be less than ${input.max}.`);
         }
     }
 
     if (input.maxlength && value.length) {
         if (input.maxlength > value.length) {
-            errors.push(`${key} must be shorter than ${input.length}.`);
+            errors.push(input.error || `${key} must be shorter than ${input.length}.`);
         }
     }
 
     if (input.minlength && value.length) {
         if (input.minlength > value.length) {
-            errors.push(`${key} must be longer than ${input.minlength}.`);
+            errors.push(input.error || `${key} must be longer than ${input.minlength}.`);
         }
     }
 
     if (input.match) {
         if (Object.isRegExp(input.match)) {
             if (!input.match.test(value)) {
-                errors.push(`${key} is not valid.`);
+                errors.push(input.error || `${key} is not valid.`);
             }    
         }
         else if (Array.isArray(input.match)) {
             if (input.match.indexOf(value) < 0) {
-                errors.push(`${key} is not valid.`);
+                errors.push(input.error || `${key} is not valid.`);
             }
         }
         else if (input.match != value) {
-            errors.push(`${key} does not match ${value}.`);
+            errors.push(input.error || `${key} does not match ${value}.`);
         }
     }
 
