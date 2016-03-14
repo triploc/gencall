@@ -129,54 +129,22 @@ function Call(router) {
         me.inputs = Object.merge(me.inputs || { }, params, true);
         return me;
     };
-    
-    this.all = this.ALL = function() {
-        addRoutes("all", arguments);
-        return me;
-    };
-    
-    this.get = this.GET = function() {
-        addRoutes("get", arguments);
-        return me;
-    };
+
+    [
+        "all", "checkout", "connect", "copy", "delete", "get", "head",
+        "lock", "merge", "mkactivity", "mkcol", "move", "m-search",
+        "notify", "options", "patch", "post", "propfind", "proppatch",
+        "purge", "put", "report", "search", "subscribe", "trace",
+        "unlock", "unsubscribe"
+    ].forEach(function(method) {
+        me[method] = me[method.toUpperCase()] = function() {
+            addRoutes(method, arguments);
+            return me;
+        };
+    })
     
     this.getpost = this.GETPOST = function() {
         addRoutes([ "get", "post" ], arguments);
-        return me;
-    };
-    
-    this.post = this.POST = function() {
-        addRoutes("post", arguments);
-        return me;
-    };
-    
-    this.put = this.PUT = function() {
-        addRoutes("put", arguments);
-        return me;
-    };
-    
-    this.patch = this.PATCH = function() {
-        addRoutes("patch", arguments);
-        return me;
-    };
-    
-    this.delete = this.DELETE = function() {
-        addRoutes("delete", arguments);
-        return me;
-    };
-    
-    this.head = this.HEAD = function() {
-        addRoutes("head", arguments);
-        return me;
-    };
-    
-    this.options = this.OPTIONS = function() {
-        addRoutes("options", arguments);
-        return me;
-    };
-    
-    this.trace = this.TRACE = function() {
-        addRoutes("trace", arguments);
         return me;
     };
     
