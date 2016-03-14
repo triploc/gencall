@@ -146,18 +146,7 @@ __Recursive Processing__
 
 ### .METHOD(... url)
 
-These methods will bind HTTP methods to the supplied URL route patterns.  Valid methods are:
-
-* GET
-* POST
-* GETPOST (GET OR POST)
-* PUT
-* PATCH
-* DELETE
-* HEAD
-* OPTIONS
-* TRACE
-* ALL
+These methods will bind HTTP methods to the supplied URL route patterns.
 
 ```javascript
 call.get("/one", "/two", "/three")
