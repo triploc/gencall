@@ -6,6 +6,10 @@ var express = require("express"),
     ejs = require("ejs"),
     fs = require("fs"),
     path = require("path"),
+    url = require("url"),
+    mime = require("mime"),
+    accepts = require('accepts'),
+    xml = require("xml"),
     cartesian = require('cartesian');
 
 exports.routers = [ ];
@@ -125,6 +129,10 @@ function Call(router) {
         return me;
     };
     
+    this.types = function(types) {
+        me.contentTypes = types;
+    };
+    
     this.params = function(params) {
         me.inputs = Object.merge(me.inputs || { }, params, true);
         return me;
@@ -152,12 +160,13 @@ function Call(router) {
         me.routes.forEach(function(route) {
             router[route.first()](
                 route.last(), 
-                function(req, res, next) {
+                (req, res, next) => {
                     req.authenticated = me.authenticated || me.router.authenticated;
                     req.privileges = me.router.privileges ? me.router.privileges.union(me.privileges).compact(true) : me.privileges;
                     req.verb = route.first();
                     req.route = route.last();
                     req.inputs = me.inputs;
+                    res.respond = (data, template) => { respond(req, res, me.contentTypes, data, template); };
                     next();
                 }, 
                 exports.secure,
@@ -224,7 +233,10 @@ function validateInput(key, input, value, errors) {
     if (input.required && (!value || value.trim() == "")) {
         errors.push(input.error || `${key} cannot be missing.`);
     }
-    else if (!input.required && !value) {
+    else if (input.default && (!value || value.trim() == "")) {
+        value = input.default;
+    }
+    else if (!input.required && (!value || value.trim() == "")) {
         value = "";
     }
 
@@ -471,4 +483,45 @@ function getMountPaths(app) {
     
     if (app.parent) getMountPaths(app.parent).forEach((p) => { paths.push(p); });
     return paths;
+}
+
+exports.inferResponseType = function(req, res, next) {
+    var parse = url.parse(req.url),
+        ext = path.extname(parse.pathname);
+    
+    if (ext.length && ext != ".") {
+        req.headers.Accept = mime.lookup(ext);
+        res.type(ext);
+        parse.pathname = parse.pathname.to(-1 * ext.length);
+        req.url = url.format(parse);
+    }
+    
+    next();
+};
+
+exports.defaultTemplate = null;
+
+function respond(req, res, types, data, template) {
+    switch(accepts(req).type(types)) {
+        case "html":
+            res.type("html");
+            if (template) res.render(template, data);
+            else res.render(exports.defaultTemplate, data);
+            break;
+        case "json":
+            res.type("json");
+            res.json(data);
+            break;
+        case "xml":
+            res.type("xml");
+            res.send(xml(data));
+            break;
+        case "text":
+        case "txt":
+            res.type("text");
+            res.send(data.toString()); 
+            break;
+        default:
+            res.status(406).send('Not Acceptable');
+    }
 }

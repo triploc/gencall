@@ -1,6 +1,6 @@
 {
   "name": "gencall",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Express router extension for RESTful API's.",
   "main": "index.js",
   "scripts": {
@@ -23,12 +23,15 @@
   },
   "homepage": "https://github.com/triploc/gencall#readme",
   "dependencies": {
+    "accepts": "^1.3.2",
     "cartesian": "^1.0.0",
     "ejs": "^2.4.1",
     "express": "^4.13.4",
     "google-caja": "0.0.2",
+    "mime": "^1.3.4",
     "sugar": "^1.4.1",
-    "validator": "^5.1.0"
+    "validator": "^5.1.0",
+    "xml": "^1.0.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",

@@ -132,6 +132,8 @@ __Validation Parameters__
 
 __Metadata Parameters__
 
+> __default__: *any* – a default value to assign when the parameter is missing or empty
+>
 > __locale__: *text* – a locale that effects the way `alpha`, `alphanumeric`, and `phone` data types are interpreted
 >
 > __description__: *text* – a description that can be used in generating documentation
