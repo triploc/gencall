@@ -61,7 +61,7 @@ exports.router = function(options) {
 
 exports.secure = function(req, res, next) {
     if (req.authenticated && !req.session.user) {
-        res.statusCode = 401;
+        res.status(401);
         next(new Error("Unauthenticated"));
         return;
     }
@@ -74,19 +74,72 @@ exports.secure = function(req, res, next) {
         }
     }
     
-    res.statusCode = 403;
+    res.status(403);
     next(new Error("Unauthorized"));
 };
 
 exports.validated = function(req, res, next) {
     if (abort) {
-        res.statusCode = 400;
+        res.status(400);
         next(new Error("Invalid request"));
     }
     else {
         next();
     }
 };
+
+exports.contentTypeOverride = function(req, res, next) {
+    var parse = url.parse(req.url),
+        ext = path.extname(parse.pathname);
+    
+    if (ext.length && ext != ".") {
+        req.headers.Accept = mime.lookup(ext);
+        res.type(ext);
+        parse.pathname = parse.pathname.to(-1 * ext.length);
+        req.url = url.format(parse);
+    }
+    else if (req.query.format) {
+        req.headers.Accept = mime.lookup(req.query.format);
+        res.type(req.query.format);
+    }
+    
+    next();
+};
+
+exports.autoGenerate = function(template, options, cb) {
+    template = template.toLowerCase();
+    if (cb == null && Object.isFunction(options)) {
+        cb = options;
+        options = { };
+    }
+    
+    var filename = __dirname + "/templates/" + template + ".ejs";
+    fs.readFile(filename, function(err, data) {
+        if (err) cb(err);
+        else {
+            var output = null;
+            try {
+                if (!options.requestFunction) {
+                    options.requestFunction = "gencall";
+                }
+                
+                output = ejs.render(data.toString(), { 
+                    routers: exports.routers,
+                    options: options,
+                    path: path
+                }, { filename: filename });
+            }
+            catch (ex) {
+                cb(ex);
+                return;
+            }
+
+            cb(null, output);
+        }
+    });
+};
+
+exports.defaultTemplate = __dirname + "/template.ejs";
 
 function Call(router) {
     
@@ -438,39 +491,6 @@ function validateInput(key, input, value, errors) {
     }
 }
 
-exports.autoGenerate = function(template, options, cb) {
-    template = template.toLowerCase();
-    if (cb == null && Object.isFunction(options)) {
-        cb = options;
-        options = { };
-    }
-    
-    var filename = __dirname + "/templates/" + template + ".ejs";
-    fs.readFile(filename, function(err, data) {
-        if (err) cb(err);
-        else {
-            var output = null;
-            try {
-                if (!options.requestFunction) {
-                    options.requestFunction = "gencall";
-                }
-                
-                output = ejs.render(data.toString(), { 
-                    routers: exports.routers,
-                    options: options,
-                    path: path
-                }, { filename: filename });
-            }
-            catch (ex) {
-                cb(ex);
-                return;
-            }
-
-            cb(null, output);
-        }
-    });
-};
-
 function getMountPaths(app) {
     var paths = [ ];
     if (app.mountpath) {
@@ -485,28 +505,12 @@ function getMountPaths(app) {
     return paths;
 }
 
-exports.inferResponseType = function(req, res, next) {
-    var parse = url.parse(req.url),
-        ext = path.extname(parse.pathname);
-    
-    if (ext.length && ext != ".") {
-        req.headers.Accept = mime.lookup(ext);
-        res.type(ext);
-        parse.pathname = parse.pathname.to(-1 * ext.length);
-        req.url = url.format(parse);
-    }
-    
-    next();
-};
-
-exports.defaultTemplate = null;
-
 function respond(req, res, types, data, template) {
     switch(accepts(req).type(types)) {
         case "html":
             res.type("html");
-            if (template) res.render(template, data);
-            else res.render(exports.defaultTemplate, data);
+            if (template) res.render(template, { req: req, res: res, results: data });
+            else res.render(exports.defaultTemplate, { req: req, res: res, results: data });
             break;
         case "json":
             res.type("json");

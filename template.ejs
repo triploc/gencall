@@ -1,0 +1,112 @@
+<%_ function writeObject(obj) { _%>
+<ul>
+<%_
+    if (Object.isObject(obj) || Object.isArray(obj)) {
+        for (var p in obj) {
+_%>
+    <li>
+        <span class="text-danger"><%= p %></span>
+        <% writeObj(obj[p]) %>
+    </li>
+<%_
+        }
+    }
+    else {
+_%>
+    <li><span class="text-primary"><%= obj %></span></li>
+<%_        
+    }
+_%>
+</ul>
+<%_ } _%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Results</title>
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/paper/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("ul").on("click", function() {
+                    $(this).find("li").toggle();
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <h1>Request</h1>
+            <div>
+                <div class="alert alert-<%= res.statusCode == 200 ? 'success' : 'danger' %>">
+                    <span class="text-success"><%= req.method %></span>
+                    <span class="text-primary"><%= req.protocol %>://<%= req.hostname %><%= req.path %></span>
+                </div>
+                <div>
+                    <h3>Headers</h3>
+                    <ul>
+                        <% Object.keys(req.headers).forEach(function(header) { %>
+                        <li>
+                            <span class="text-danger"><%= header %>:</span>
+                            <span class="text-primary"><%= req.headers[header] %></span>
+                        </li>
+                        <% }) %>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Cookies</h3>
+                    <ul>
+                        <% Object.keys(req.cookies).forEach(function(name) { %>
+                        <li>
+                            <span class="text-danger"><%= name %>:</span>
+                            <span class="text-primary"><%= req.cookies[name] %></span>
+                        </li>
+                        <% }) %>
+                        <% Object.keys(req.signedCookies).forEach(function(name) { %>
+                        <li>
+                            <span class="text-danger"><%= name %>:</span>
+                            <span class="text-primary"><%= req.cookies[name] %></span>
+                        </li>
+                        <% }) %>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Params</h3>
+                    <ul>
+                        <% Object.keys(req.params).forEach(function(field) { %>
+                        <li>
+                            <span class="text-danger"><%= field %>:</span>
+                            <span class="text-primary"><%= req.params[field] %></span>
+                        </li>
+                        <% }) %>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Query</h3>
+                    <ul>
+                        <% Object.keys(req.query).forEach(function(field) { %>
+                        <li>
+                            <span class="text-danger"><%= field %>:</span>
+                            <span class="text-primary"><%= req.query[field] %></span>
+                        </li>
+                        <% }) %>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Body</h3>
+                    <ul>
+                        <% Object.keys(req.body).forEach(function(field) { %>
+                        <li>
+                            <span class="text-danger"><%= field %>:</span>
+                            <span class="text-primary"><%= req.body[field] %></span>
+                        </li>
+                        <% }) %>
+                    </ul>
+                </div>
+            </div>
+            <h1>Response</h1>
+            <div>
+                <% writeObject(results) %>
+            </div>
+        </div>
+    </body>
+</html>
