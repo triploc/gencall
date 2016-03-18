@@ -180,7 +180,7 @@ app.use(gencall.contentTypeOverride);
 
 ### Multi-Format Responses
 
-A call may support multiple formats with the `call.formats(... formats)` directive and the `res.respond(data, template)` method.  The `call.defaultFormat(format)` directive can be used to specify a default format when no `Accept` header is present.
+A call may support multiple formats with the `call.formats(... formats)` directive and the `res.respond(data, template)` method.  The `call.defaultFormat(format)` directive can be used to specify a default format when no `Accept` header is present.  The `formats` and `defaultFormat` directives can also be set at the `router` level and will be inherited by `calls` that do not override these directives explicitly.
 
 ```javascript
 call.formats("json", "xml", "html")
