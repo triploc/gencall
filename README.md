@@ -180,7 +180,7 @@ app.use(gencall.contentTypeOverride);
 
 ### Multi-Format Responses
 
-A call may support multiple formats with the `call.formats(... formats)` directive and the `res.respond(data, template)` method.
+A call may support multiple formats with the `call.formats(... formats)` directive and the `res.respond(data, template)` method.  The `call.defaultFormat(format)` directive can be used to specify a default format when no `Accept` header is present.
 
 ```javascript
 call.formats("json", "xml", "html")
@@ -189,7 +189,7 @@ call.formats("json", "xml", "html")
     });
 ```
 
-The `respond` method will choose the first acceptable content type listed in the `formats` directive.  If the selected format is `html`, the template parameter is used in the `res.render` call.  Supported formats are: `html`, `json`, `xml`, and `text`.
+The `respond` method will choose the first acceptable content type listed in the `formats` directive.  If the selected format is `html`, the template parameter is used in the `res.render` call.  Supported formats are: `html`, `json`, `xml`, and `text`.  If the `Accept` types specified cannot be accomodated, a HTTP 406 response is generated.
 
 ## Custom Behavior
 
