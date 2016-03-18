@@ -74,7 +74,7 @@ Requires that the request be made from an authenticated user.  If privileges are
 call.secure("admin", "superuser")
 ```
 
-Gentleman Caller comes with a default security implementation that can be overridden.  It assumes that `req.session.user` exists for an authenticated user and that `req.session.user.privileges` exists for authorization.
+Gentleman Caller comes with a default security implementation that can be overridden.  It assumes that `req.session.authenticated` is set for an authenticated user and that `req.session.privileges` contains privileges for authorization.
 
 ```javascript
 gencall.secure = function(req, res, next) { };
@@ -148,27 +148,54 @@ __Recursive Processing__
 
 ### .METHOD(... url)
 
-These methods will bind HTTP methods to the supplied URL route patterns.
+These methods will bind HTTP methods to the supplied URL route patterns.  In addition to standard Express methods, the `getpost` method will attach to both the GET and POST verbs.
 
 ```javascript
 call.get("/one", "/two", "/three")
 ```
 
-### .process(cb)
+### .process(... handlers)
 
 If security and validation requirements are met, the execution logic behind the endpoint is invoked and the request is processed.
 
 ```javascript
 call.process((req, res, next) => {
+    next();
+}, (req, res, next) => {
     // handle the call
 })
 ```
+
+## Content Type Negotiation
+
+Content type negotiation is supported through a few mechanisms.
+
+### Override Middleware
+
+The `contentTypeOverride` middleware looks for a file extension on the URL path and if found, overrides the `Accept` header with the mime type returned by [mime.lookup()](https://github.com/broofa/node-mime#mimelookuppath).  For example, url `http://localhost/some/path.json?q=xxx` will be rewritten as `http://localhost/some/path?q=xxx` and the `Accept: application/json;` header will be set.
+
+```javascript
+app.use(gencall.contentTypeOverride);
+```
+
+### Multi-Format Responses
+
+A call may support multiple formats with the `call.formats(... formats)` directive and the `res.respond(data, template)` method.
+
+```javascript
+call.formats("json", "xml", "html")
+    .process((req, res, next) => {
+        res.respond({ field: "data" }, "template.ejs");
+    });
+```
+
+The `respond` method will choose the first acceptable content type listed in the `formats` directive.  If the selected format is `html`, the template parameter is used in the `res.render` call.  Supported formats are: `html`, `json`, `xml`, and `text`.
 
 ## Custom Behavior
 
 Validation behavior can be modified by overriding the `gencall.validated(req, res, next)` method.  By default, if validation fails for a request parameter and the `abort` flag is set, the response status is set to 400 and request processing is aborted.
 
-Security behavior can be modified by overriding the `gencall.secure(req, res, next)` method.  The default implementation assumes that `req.session.user` exists for an authenticated user and that `req.session.user.privileges` exists for authorization.  A response status of 401 or 403 are set and request processing is aborted on failure.
+Security behavior can be modified by overriding the `gencall.secure(req, res, next)` method.  The default implementation assumes `req.session.authenticated` is set for an authenticated user and that `req.session.privileges` contains privileges for authorization.  A response status of 401 or 403 are set and request processing is aborted on failure.
 
 ## Create Artifacts
 
