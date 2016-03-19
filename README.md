@@ -132,6 +132,8 @@ __Validation Parameters__
 
 __Metadata Parameters__
 
+> __source__: *string or array* – the source of the parameter (params, body, or query)
+>
 > __default__: *any* – a default value to assign when the parameter is missing or empty
 >
 > __locale__: *text* – a locale that effects the way `alpha`, `alphanumeric`, and `phone` data types are interpreted
