@@ -20,7 +20,7 @@ router.call().secure().get("api/:lang").params({
         tranform: "lowercase"
     }
 }).process(function(req, res, next) {
-    router.client(req.params.lang, function(err, src) {
+    router.client(res.locals.lang, function(err, src) {
         res.write(src);
         res.end();
     });
@@ -82,7 +82,7 @@ gencall.secure = function(req, res, next) { };
 
 ### .params([inputs])
 
-Performs validation on submitted parameters.  Values are looked for first in `req.params`, then in `req.query`, then in `req.body`.  All values are then collected in `req.params`.
+Performs validation on submitted parameters.  Values are looked for first in `req.params`, then in `req.query`, then in `req.body`.  All values are then collected in `res.locals`.
 
 ```javascript
 call.params({
@@ -203,12 +203,12 @@ Security behavior can be modified by overriding the `gencall.secure(req, res, ne
 
 One of the most powerful features of Gentleman Caller is artifact creation.
 
-### gencall.autoGenerate(template, options, cb)
+### gencall.generate(template, options, cb)
 
 Client code and documentation can be automatically generated from metadata and built-in templates.
 
 > __template__: *text* – the desired output format 
-> > html, jquery, angular, node, csharp, java
+> > docs, jquery, angular, node, csharp, java
 >
 > __options__: *object* – a set of options specific to the template format
 

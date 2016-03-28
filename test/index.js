@@ -3,7 +3,7 @@ require("sugar");
 var fs = require("fs"),
     rm = require("rimraf");
     
-describe('Router', function() {
+describe('Module', function() {
     
     var outputDir = __dirname + "/../test-output";
     
@@ -42,18 +42,8 @@ describe('Router', function() {
         });
     });
     
-    it("can load examples", function(done) {
-        fs.readdir(__dirname + "/../examples", function(err, files) {
-            files.filter(/.*js/i).forEach(function(file) {
-                require(__dirname + "/../examples/" + file);
-            });
-            
-            done();
-        })
-    });
-    
     it("can generate HTML documentation", function(done) {
-        gencall.autoGenerate("html", function(err, html) {
+        gencall.generate("html", function(err, html) {
             if (err) throw err;
             else {
                 fs.writeFile(outputDir + "/doc.html", html, done);
@@ -62,7 +52,7 @@ describe('Router', function() {
     });
     
     it("can generate JSON schema", function(done) {
-        gencall.autoGenerate("json", function(err, json) {
+        gencall.generate("json", function(err, json) {
             if (err) throw err;
             else {
                 JSON.parse(json);
@@ -72,7 +62,7 @@ describe('Router', function() {
     });
     
     it("can generate a jQuery client", function(done) {
-        gencall.autoGenerate("jquery", function(err, js) {
+        gencall.generate("jquery", function(err, js) {
             if (err) throw err;
             else {
                 eval(js);
@@ -82,7 +72,7 @@ describe('Router', function() {
     });
     
     it("can generate an Angular client", function(done) {
-        gencall.autoGenerate("angular", function(err, js) {
+        gencall.generate("angular", function(err, js) {
             if (err) throw err;
             else {
                 eval(js);
@@ -92,7 +82,7 @@ describe('Router', function() {
     });
     
     it("can generate a Node.js client", function(done) {
-        gencall.autoGenerate("node", function(err, js) {
+        gencall.generate("node", function(err, js) {
             if (err) throw err;
             else {
                 eval(js);
