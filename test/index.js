@@ -43,7 +43,7 @@ describe('Module', function() {
     });
     
     it("can generate HTML documentation", function(done) {
-        gencall.generate("html", function(err, html) {
+        gencall.generate("docs", function(err, html) {
             if (err) throw err;
             else {
                 fs.writeFile(outputDir + "/doc.html", html, done);
