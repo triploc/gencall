@@ -41,11 +41,11 @@ gencall.mount(app, "/app", __dirname + "/routes/app", { path: "/example" });
 app.listen(80);
 ```
 
-### app()
+### gencall.app()
 
 The module exposes a top-level `app` method that returns a modified `express()` application object.  This instance has a `mount` method which invokes the top-level `mount` method, as well as a `static` method which is a convenience call for `app.use(express.static(root, options))`.
 
-### mount(parent, filepath, options)
+### gencall.mount(parent, filepath, options)
 
 Constructs a route hierarchy from a file system hierarchy.  
 
@@ -102,15 +102,15 @@ router.use([route], middleware)
 
 View [docs here](http://expressjs.com/en/api.html#router "ExpressJS Router Docs").
 
-### .mount(parent, path)
+### router.mount(parent, path)
 
 A bottom up version of `use`.  "Mounting" rather than "using" allows routers to know their parents and establish `mountpath`'s all the way down the route hierarchy.  This approach supports [artifact generation](#artifacts).
 
-### .paths()
+### router.paths()
 
 An array of url paths where the `router` is mounted.  This is calculated by performing a cartesian combination of all `mountpath`'s up the route hierarchy.
 
-### .static(root, options)
+### router.static(root, options)
 
 A shortcut for `router.use(express.static(root, options))`.
 
@@ -118,7 +118,7 @@ A shortcut for `router.use(express.static(root, options))`.
 
 The `router.call()` method returns the main Gentleman Caller interface.
 
-### .secure([privileges])
+### call.secure([privileges])
 
 Requires that the request be made from an authenticated user.  If privileges are specified, the user must be authorized for those roles.
 
@@ -132,7 +132,7 @@ Gentleman Caller comes with a default security implementation that can be overri
 gencall.secure = function(req, res, next) { };
 ```
 
-### .params([inputs])
+### call.params([inputs])
 
 Performs validation on submitted parameters.  Values are looked for first in `req.params`, then in `req.query`, then in `req.body`.  All values are then collected in `res.locals`.
 
@@ -200,7 +200,7 @@ __Recursive Processing__
 
 > __properties__: *object* – transformation and validation can be performed recursively on properties of an input
 
-### .METHOD(... url)
+### call.METHOD(... url)
 
 These methods will bind HTTP methods to the supplied URL route patterns.  In addition to standard Express methods, the `getpost` method will attach to both the GET and POST verbs.
 
@@ -208,7 +208,7 @@ These methods will bind HTTP methods to the supplied URL route patterns.  In add
 call.get("/one", "/two", "/three")
 ```
 
-### .process(... handlers)
+### call.process(... handlers)
 
 If security and validation requirements are met, the execution logic behind the endpoint is invoked and the request is processed.
 
@@ -226,7 +226,7 @@ Content type negotiation is supported through a few mechanisms.
 
 ### Override Middleware
 
-The `contentTypeOverride` middleware looks for a file extension on the URL path and if found, overrides the `Accept` header with the mime type returned by [mime.lookup()](https://github.com/broofa/node-mime#mimelookuppath).  For example, url `http://localhost/some/path.json?q=xxx` will be rewritten as `http://localhost/some/path?q=xxx` and the `Accept: application/json;` header will be set.
+The `gencall.contentTypeOverride` middleware looks for a file extension on the URL path and if found, overrides the `Accept` header with the mime type returned by [mime.lookup()](https://github.com/broofa/node-mime#mimelookuppath).  For example, url `http://localhost/some/path.json?q=xxx` will be rewritten as `http://localhost/some/path?q=xxx` and the `Accept: application/json;` header will be set.
 
 ```javascript
 app.use(gencall.contentTypeOverride);
@@ -264,7 +264,7 @@ Client code and documentation can be automatically generated from metadata and b
 >
 > __options__: *object* – a set of options specific to the template format
 
-### .name(name) and .describe(desc)
+### call.name(name) and call.describe(desc)
 
 Both `Router` and `Call` objects have `name` and `describe` methods which are used to generated documentation and client code.
 
