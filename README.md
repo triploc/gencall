@@ -27,6 +27,46 @@ router.call().secure().get("api/:lang").params({
 });
 ```
 
+## Applications
+
+The simplest and most comprehensive way to use the module is with the `app` and `mount` methods.
+
+```javascript
+gencall.app()
+    .mount("/app", __dirname + "/routes/app")
+    .listen(80);
+    
+var app = gencall.app();
+gencall.mount(app, "/app", __dirname + "/routes/app", { path: "/example" });
+app.listen(80);
+```
+
+### app()
+
+The module exposes a top-level `app` method that returns a modified `express()` application object.  This instance has a `mount` method which invokes the top-level `mount` method, as well as a `static` method which is a convenience call for `app.use(express.static(root, options))`.
+
+### mount(parent, filepath, options)
+
+Constructs a route hierarchy from a file system hierarchy.  
+
+__parent__ is a router or app.  
+__filepath__ is either a file or directory of route modules.
+__options__ are passed to constructed routers and route modules.
+
+A route module (e.g. /routes/app/call.js) look like this:
+
+```javascript
+module.exports = function(router, options) {
+    router.call().secure().get("/some-call").process(function(req, res, next) {
+        res.respond({ data: "some data" });
+    });
+    
+    // ...
+};
+```
+
+The module is mounted at a url path that matches its file path.  For example, the above snippet would be hosted at `/example/routes/app/call/some-call`.  To mount endpoints at the parent-level, name a folder or file `index`.  For example, if the file above were named index.js, the call would be hosted at `/example/routes/app/some-call`.
+
 ## Create Routers
 
 Create a router with the same options that the `express.Router()` method takes.
@@ -61,6 +101,18 @@ router.use([route], middleware)
 ```
 
 View [docs here](http://expressjs.com/en/api.html#router "ExpressJS Router Docs").
+
+### .mount(parent, path)
+
+A bottom up version of `use`.  "Mounting" rather than "using" allows routers to know their parents and establish `mountpath`'s all the way down the route hierarchy.  This approach supports [artifact generation](#artifacts).
+
+### .paths()
+
+An array of url paths where the `router` is mounted.  This is calculated by performing a cartesian combination of all `mountpath`'s up the route hierarchy.
+
+### .static(root, options)
+
+A shortcut for `router.use(express.static(root, options))`.
 
 ## Caller Interface
 
@@ -199,7 +251,7 @@ Validation behavior can be modified by overriding the `gencall.validated(req, re
 
 Security behavior can be modified by overriding the `gencall.secure(req, res, next)` method.  The default implementation assumes `req.session.authenticated` is set for an authenticated user and that `req.session.privileges` contains privileges for authorization.  A response status of 401 or 403 are set and request processing is aborted on failure.
 
-## Create Artifacts
+## Create Artifacts <a id="artifacts"></a>
 
 One of the most powerful features of Gentleman Caller is artifact creation.
 
@@ -228,7 +280,7 @@ gencall
         .execute((req, res, next) => { });
 ```
 
-### <a name="metadata">Metadata</a>
+### Metadata <a id="metadata"></a>
 
 Artifact creation is facilitates through a structural comprehension of the application.  Gentleman Caller tracks the assembly of routing logic and utilizes validation requirements to gain this insight.
 
