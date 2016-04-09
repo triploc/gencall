@@ -106,6 +106,14 @@ View [docs here](http://expressjs.com/en/api.html#router "ExpressJS Router Docs"
 
 A bottom up version of `use`.  "Mounting" rather than "using" allows routers to know their parents and establish `mountpath`'s all the way down the route hierarchy.  This approach supports [artifact generation](#artifacts).
 
+### router.error(handler)
+
+An error handler in the form of `function(err, req, res, next)` that will be appended to the end of all `call.process` handlers.
+
+### router.secure([privileges])
+
+Requires that the request be made from an authenticated user.  If privileges are specified, the user must be authorized for those roles.  See [call.secure](#call.secure) below for more info.
+
 ### router.paths()
 
 An array of url paths where the `router` is mounted.  This is calculated by performing a cartesian combination of all `mountpath`'s up the route hierarchy.
@@ -118,9 +126,9 @@ A shortcut for `router.use(express.static(root, options))`.
 
 The `router.call()` method returns the main Gentleman Caller interface.
 
-### call.secure([privileges])
+### call.secure([privileges]) <a id="call.secure"></a>
 
-Requires that the request be made from an authenticated user.  If privileges are specified, the user must be authorized for those roles.
+Requires that the request be made from an authenticated user.  If privileges are specified, the user must be authorized for those roles.  This directive may also be set at the router level (i.e. `router.secure([privileges])`).
 
 ```javascript
 call.secure("admin", "superuser")
@@ -234,7 +242,7 @@ app.use(gencall.contentTypeOverride);
 
 ### Multi-Format Responses
 
-A call may support multiple formats with the `call.formats(... formats)` directive and the `res.respond(data, template)` method.  The `call.defaultFormat(format)` directive can be used to specify a default format when no `Accept` header is present.  The `formats` and `defaultFormat` directives can also be set at the `router` level and will be inherited by `calls` that do not override these directives explicitly.
+A call may support multiple formats with the `call.formats(... formats)` directive and the `res.respond(data, template)` method.  The `call.defaultFormat(format)` directive can be used to specify a default format when no `Accept` header is present.  The `formats` and `defaultFormat` directives can also be set at the `router` level and will be inherited by sub-`router`'s and `calls` that do not override these directives explicitly.
 
 ```javascript
 call.formats("json", "xml", "html")
