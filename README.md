@@ -178,8 +178,6 @@ __Validation Parameters__
 > __type__: *text* – ensures data type
 > > integer, number, date, json, boolean, uuid, email, domain, url, ip, mac, phone, uuid, creditcard, base64, currency, ascii, alphanumeric, alpha, hexcolor, location, latitude, longitude
 >
-> __password__: *object* – 
->
 > __min__: *any* – a minimum value
 >
 > __max__: *any* – a maximum value
