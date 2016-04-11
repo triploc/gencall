@@ -164,6 +164,9 @@ __Tranformation Parameters__
 > __truncate__: *integer* – truncate input at a given number of characters.
 >
 > __words__: *integer* – truncate input at a given number of words.
+>
+> __transform__: *text* – transforms textual case
+> > capitalize, titleize, uppercase, lowercase, dasherize, parameterize, humanize, underscore, spacify, camelcase, titlecase
 
 __Validation Parameters__
 
@@ -172,11 +175,10 @@ __Validation Parameters__
 > __language__: *text* – ensures text belongs to a specific alphabet
 > > Arabic, Cyrillic, Greek, Hangul, Han, Kanji, Hebrew, Hiragana, Kana, Katakana, Latin, Thai, Devanagari
 >
-> __transform__: *text* – transforms textual case
-> > capitalize, titleize, uppercase, lowercase, dasherize, parameterize, humanize, underscore, spacify, camelcase, titlecase
->
 > __type__: *text* – ensures data type
-> > integer, number, date, json, boolean, uuid, email, domain, url, ip, mac, phone, uuid, creditcard, base64, currency, ascii, alphanumeric, alpha, hexcolor, location
+> > integer, number, date, json, boolean, uuid, email, domain, url, ip, mac, phone, uuid, creditcard, base64, currency, ascii, alphanumeric, alpha, hexcolor, location, latitude, longitude
+>
+> __password__: *object* – 
 >
 > __min__: *any* – a minimum value
 >
@@ -185,6 +187,16 @@ __Validation Parameters__
 > __maxlength__: *integer* – a maximum length
 >
 > __minlength__: *integer* – a minimum length
+>
+> __hasNumber__: *boolean* – convenience flag to check if input has at least one digit
+>
+> __hasUppercase__: *boolean* – convenience flag to check if input has at least one uppercase character
+>
+> __hasLowercase__: *boolean* – convenience flag to check if input has at least one lowercase character
+>
+> __hasSymbol__: *boolean* – convenience flag to check if input has at least one symbol character
+>
+> __hasWhitespace__: *boolean* – convenience flag to check if input has whitespace
 >
 > __match__: *regex* – an exact value match, array of candidate values, or regular expression that must test true
 >
