@@ -2,7 +2,7 @@
 
 # Gentleman Caller
 
-Express router extension for RESTful API's.
+Express router extensions.
 
 ```javascript
 var gencall = require("gencall");
