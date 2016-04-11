@@ -228,6 +228,19 @@ call.process((req, res, next) => {
 })
 ```
 
+Handlers can implement an `interface` property containing inputs to be passed to `params`.  In this way, handlers can be authored as reuseable components with execution logic tightly coupled to input validation directives.
+
+```javascript
+function handler(req, res, next) { next(); }
+
+// This will accomplish the same thing...
+call.params({ email: { type: "email" } }).process(handler);
+
+// As this:
+handler.interface = { email: { type: "email" } };
+call.process(handler);
+```
+
 ## Content Type Negotiation
 
 Content type negotiation is supported through a few mechanisms.
