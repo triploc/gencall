@@ -1,7 +1,7 @@
 {
   "name": "gencall",
-  "version": "1.0.13",
-  "description": "Express router extension for RESTful API's.",
+  "version": "1.0.14",
+  "description": "Express router extensions.",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
@@ -11,10 +11,8 @@
     "url": "git+https://github.com/triploc/gencall.git"
   },
   "keywords": [
-    "REST",
     "express",
-    "router",
-    "API"
+    "router"
   ],
   "author": "Jonathan Hollinger",
   "license": "MIT",
