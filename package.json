@@ -4,7 +4,8 @@
   "description": "Express router extensions.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "./node_modules/.bin/istanbul cover _mocha",
+    "coverage": "open coverage/lcov-report/*.html"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "istanbul": "^0.4.3",
     "mocha": "^2.4.5",
     "rimraf": "^2.5.2"
   }
