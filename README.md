@@ -295,17 +295,17 @@ Client code and documentation can be automatically generated from metadata and b
 >
 > __options__: *object* – a set of options specific to the template format
 
-### call.name(name) and call.describe(desc)
+### call.title(name) and call.describe(desc)
 
-Both `Router` and `Call` objects have `name` and `describe` methods which are used to generated documentation and client code.
+`Call` objects have `name` and `describe` methods which are used to generated documentation and client code.  `Router` objects have `title` and `describe` methods.  The discrepancy has to do with the way `express.Router` objects are constructed.
 
 ```javascript
 gencall
     .router()
-    .name("app")
+    .title("app")
     .describe("Contains main app routes.")
     .call()
-        .name("app")
+        .title("app")
         .describe("Main route.")
         .get("/app")
         .execute((req, res, next) => { });

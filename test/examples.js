@@ -16,8 +16,18 @@ describe('Examples', function() {
         }
     });
 
-    it("can load examples", function() {
-        gencall.app().mount(__dirname + "/../examples").listen(3000);
+    it("can load a single file", function() {
+        gencall.app().mount(__dirname + "/../examples/simple.js").should.be.ok;
+    });
+
+    it("can mount static files to an app", function() {
+        gencall.app().static(__dirname + "/../examples/static/content").should.be.ok;
+    })
+
+    it("can mount examples", function() {
+        var app = gencall.app().mount(__dirname + "/../examples");
+        app.should.be.ok;
+        app.listen(3000);
     });
 
     describe("Simple", function() {
