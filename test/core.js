@@ -43,7 +43,7 @@ describe('Module', function() {
     });
 
     it("can generate HTML documentation", function(done) {
-        gencall.generate("docs", function(err, html) {
+        gencall.generate("docs", gencall.routers, function(err, html) {
             if (err) throw err;
             else {
                 fs.writeFile(outputDir + "/doc.html", html, done);
@@ -52,7 +52,7 @@ describe('Module', function() {
     });
 
     it("can generate JSON schema", function(done) {
-        gencall.generate("json", function(err, json) {
+        gencall.generate("schema", gencall.routers, function(err, json) {
             if (err) throw err;
             else {
                 JSON.parse(json);
@@ -62,7 +62,7 @@ describe('Module', function() {
     });
 
     it("can generate a jQuery client", function(done) {
-        gencall.generate("jquery", function(err, js) {
+        gencall.generate("jquery", gencall.routers, function(err, js) {
             if (err) throw err;
             else {
                 eval(js);
@@ -72,7 +72,7 @@ describe('Module', function() {
     });
 
     it("can generate an Angular client", function(done) {
-        gencall.generate("angular", function(err, js) {
+        gencall.generate("angular", gencall.routers, function(err, js) {
             if (err) throw err;
             else {
                 eval(js);
@@ -82,12 +82,19 @@ describe('Module', function() {
     });
 
     it("can generate a Node.js client", function(done) {
-        gencall.generate("node", function(err, js) {
+        gencall.generate("node", gencall.routers, function(err, js) {
             if (err) throw err;
             else {
                 eval(js);
                 fs.writeFile(outputDir + "/node.js", js, done);
             }
+        })
+    });
+
+    it("cannot generate an invalid client", function(done) {
+        gencall.generate("blah", gencall.routers, function(err, js) {
+            err.should.be.ok;
+            done();
         })
     });
 
