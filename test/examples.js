@@ -28,8 +28,9 @@ describe('Examples', function() {
         gencall.app().static(__dirname + "/../examples/static/content").should.be.ok;
     })
 
+    var app = null;
     it("can mount examples", function() {
-        var app = gencall.app().mount(__dirname + "/../examples");
+        app = gencall.app().mount(__dirname + "/../examples");
         app.should.be.ok;
         app.listen(3000);
     });
@@ -113,6 +114,43 @@ describe('Examples', function() {
                 done();
             });
         });
+
+        it("cannot GET /content/sample.blah", function(done) {
+            request.get("http://localhost:3000/content/sample.blah", function(err, response, body) {
+                expect(err).to.be.null;
+                response.statusCode.should.equal(406);
+                done();
+            });
+        });
+
+        it("can GET /content/sample?format=json", function(done) {
+            request.get("http://localhost:3000/content/sample?format=json", function(err, response, body) {
+                expect(err).to.be.null;
+                response.statusCode.should.equal(200);
+                body.toString().should.equal('{"field":"Hello","array":[1,2,3],"object":{"sub":"Hello","sub2":"Goodbye"}}');
+                done();
+            });
+        });
+
+        it("can GET /content/sample2 as JSON", function(done) {
+            request.get("http://localhost:3000/content/sample2", function(err, response, body) {
+                expect(err).to.be.null;
+                response.statusCode.should.equal(200);
+                body.toString().should.equal('{"field":"Hello","array":[1,2,3],"object":{"sub":"Hello","sub2":"Goodbye"}}');
+                done();
+            });
+        });
+
+        it("can GET /content/sample3 as HTML", function(done) {
+            request.get("http://localhost:3000/content/sample3", function(err, response, body) {
+                expect(err).to.be.null;
+                response.statusCode.should.equal(200);
+                body.toString().should.be.ok;
+                done();
+            });
+        });
+
+
 
     });
 
