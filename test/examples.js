@@ -29,6 +29,7 @@ describe('Examples', function() {
     })
 
     var app = null;
+
     it("can mount examples", function() {
         app = gencall.app().mount(__dirname + "/../examples");
         app.should.be.ok;
@@ -149,6 +150,44 @@ describe('Examples', function() {
                 done();
             });
         });
+
+    });
+
+    describe("Interface", function() {
+
+        it("can GET /interface/sample with valid email", function(done) {
+            request.get({
+                url: "http://localhost:3000/interface/sample",
+                qs: { "email": "j@j.com" }
+            }, function(err, response, body) {
+                expect(err).to.be.null;
+                response.statusCode.should.equal(200);
+                body.toString().should.equal('Ok');
+                done();
+            });
+        });
+
+    });
+
+    describe("Metadata", function() {
+
+        it("can register error handler with proper number of arguments", function() {
+            gencall.router().error((err, req, res, next) => { });
+        });
+
+        it("cannot register error handler with improper number of arguments", function() {
+            try {
+                gencall.router().error(() => { });
+                throw Error("Should throw error");
+            }
+            catch (ex) {
+                ex.should.be.ok;
+            }
+        });
+
+    });
+
+    describe("Secure", function() {
 
 
 
