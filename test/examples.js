@@ -747,17 +747,19 @@ describe('Examples', function() {
 
         describe("Types", function() {
             function testType(type, good, bad) {
-                it("can validate a good " + type, function(done) {
-                    request({
-                        url: "http://localhost:3000/validate/types/" + type,
-                        qs: { email: good }
-                    }, function(err, response, body) {
-                        expect(err).to.be.null;
-                        response.statusCode.should.equal(200);
-                        body.toString().should.equal("Success");
-                        done();
-                    })
-                });
+                if (good) {
+                    it("can validate a good " + type, function(done) {
+                        request({
+                            url: "http://localhost:3000/validate/types/" + type,
+                            qs: { value: good }
+                        }, function(err, response, body) {
+                            expect(err).to.be.null;
+                            response.statusCode.should.equal(200);
+                            body.toString().should.equal("Success");
+                            done();
+                        })
+                    });
+                }
 
                 if (bad) {
                     it("cannot validate a bad " + type, function(done) {
@@ -779,13 +781,13 @@ describe('Examples', function() {
             testType("number", "-2.2343e2", "pi");
             testType("date", "December 23rd", "Arthur");
             testType("json", JSON.stringify({ hello: "goodbye"}), "{ a: 1 }");
-            testType("boolean", true, null);
+            testType("boolean", "true", null);
             testType("uuid", "123e4567-e89b-12d3-a456-426655440000", "asdfasdfadsf");
             testType("email", "a@a.com", "b");
             testType("domain", "some.domain.com", 345);
-            testType("url", "http://google.com", false);
+            testType("url", "http://google.com", "false");
             testType("ip", "2601:282:800:1b80:5e1:148:2c3d:fae4", "something");
-            testType("mac", "01-23-45-67-89-ab-cd-ef", "x");
+            testType("mac", "01:23:45:67:89:ab", "x");
             testType("phone", "+19702345939", "phone");
             testType("creditcard", "378282246310005", "asdf");
             testType("base64", "dGVzdA==", "()");
@@ -796,8 +798,11 @@ describe('Examples', function() {
             testType("alpha", "asdfkj", "asdf32");
             testType("hexcolor", "#234", "xxx");
             testType("latitude", 50, 100);
+            testType("latitude", 90, "asdf");
             testType("longitude", 50, 200);
+            testType("longitude", 180, "asdf");
             testType("location", "50,100", "360,360");
+            testType("location", "90,180", "asdf");
         });
 
         describe("Min and Max", function() {
@@ -998,7 +1003,7 @@ describe('Examples', function() {
 
             it("can validate an input has a symbol", function(done) {
                 request({
-                    url: "http://localhost:3000/validate/has/number",
+                    url: "http://localhost:3000/validate/has/symbol",
                     qs: { value: "asdf8a,sdf" }
                 }, function(err, response, body) {
                     expect(err).to.be.null;
@@ -1010,7 +1015,7 @@ describe('Examples', function() {
 
             it("will invalidate an input without a symbol", function(done) {
                 request({
-                    url: "http://localhost:3000/validate/has/number",
+                    url: "http://localhost:3000/validate/has/symbol",
                     qs: { value: "asdfasdf" }
                 }, function(err, response, body) {
                     expect(err).to.be.null;
@@ -1022,7 +1027,7 @@ describe('Examples', function() {
 
             it("can validate an input has whitespace", function(done) {
                 request({
-                    url: "http://localhost:3000/validate/has/number",
+                    url: "http://localhost:3000/validate/has/whitespace",
                     qs: { value: "asdf8asdf " }
                 }, function(err, response, body) {
                     expect(err).to.be.null;
@@ -1034,7 +1039,7 @@ describe('Examples', function() {
 
             it("will invalidate an input without whitespace", function(done) {
                 request({
-                    url: "http://localhost:3000/validate/has/number",
+                    url: "http://localhost:3000/validate/has/whitespace",
                     qs: { value: "asdfasdf" }
                 }, function(err, response, body) {
                     expect(err).to.be.null;
