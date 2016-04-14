@@ -743,6 +743,17 @@ describe('Examples', function() {
             testLanguage("Latin", "l'année", "أتكلم");
             testLanguage("Thai", "ภาษาเขียน", "latin");
             testLanguage("Devanagari", "देवनागरी", "latin");
+
+            it(`cannot verify an invalid language`, function(done) {
+                request({
+                    url: "http://localhost:3000/validate/language/gibberish",
+                    qs: { value: "latin" }
+                }, function(err, response, body) {
+                    expect(err).to.be.null;
+                    response.statusCode.should.equal(400);
+                    done();
+                })
+            });
         });
 
         describe("Types", function() {

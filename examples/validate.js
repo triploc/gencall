@@ -262,6 +262,12 @@ module.exports = function(router, options) {
         res.send("Success");
     });
 
+    router.call().get("/language/gibberish").params({
+        value: { language: "Gibberish", required: true, abort: true }
+    }).process((req, res, next) => {
+        res.send("Success");
+    });
+
     // TYPES
     router.call().get("/types/text").params({
         value: { type: "text", required: true, abort: true }
