@@ -34,6 +34,7 @@
     "validator": "^5.1.0"
   },
   "devDependencies": {
+    "body-parser": "^1.15.0",
     "chai": "^3.5.0",
     "istanbul": "^0.4.3",
     "mocha": "^2.4.5",

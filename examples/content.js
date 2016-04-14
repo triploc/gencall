@@ -43,4 +43,16 @@ module.exports = function(router, options) {
             });
         });
 
+    router.call().get("/custom")
+        .process((req, res, next) => {
+            res.respond({
+                field: "Hello",
+                array: [ 1, 2, 3 ],
+                object: {
+                    sub: "Hello",
+                    sub2: "Goodbye"
+                }
+            }, __dirname + "/static/content/template.ejs");
+        });
+
 };
