@@ -1,6 +1,6 @@
 {
   "name": "gencall",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "Express router extensions.",
   "main": "index.js",
   "scripts": {
