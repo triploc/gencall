@@ -64,18 +64,21 @@ sub.mount(router, "/sub");
 The `router.call` method returns a flexible interface for wiring up url handlers.  A `call` can register with one or more HTTP verbs and paths; it may specify an interface that carries out validation on parameters delivered though params, query, and body; it may expect `req.session` to be present pass certain security requirements.  Finally, it executes some logic, the result of which may be rendered to accomodate a preferred content format (e.g. json, xml, html).
 
 ```javascript
-router.call().secure().get("api/:lang").params({
-    lang: {
-        type: "text",
-        length: 10,
-        tranform: "lowercase"
-    }
-}).process(function(req, res, next) {
-    router.client(res.locals.lang, function(err, src) {
-        res.write(src);
-        res.end();
+router.call()
+    .name("Lang Call").
+    .describe("Generates a client for this router.")
+    .secure().get("api/:lang").params({
+        lang: {
+            type: "text",
+            length: 10,
+            tranform: "lowercase"
+        }
+    }).process(function(req, res, next) {
+        router.generate(res.locals.lang, function(err, src) {
+            res.write(src);
+            res.end();
+        });
     });
-});
 ```
 
 ### call.secure([privileges]) <a id="call.secure"></a>
