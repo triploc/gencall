@@ -21,7 +21,7 @@ describe('Examples', function() {
     });
 
     it("can load a single file", function() {
-        gencall.app().mount(__dirname + "/../examples/simple.js").should.be.ok;
+        gencall.app().require(__dirname + "/../examples/simple.js").should.be.ok;
     });
 
     it("can mount static files to an app", function() {
@@ -31,7 +31,7 @@ describe('Examples', function() {
     var app = null;
 
     it("can mount examples", function() {
-        app = gencall.app().mount(__dirname + "/../examples");
+        app = gencall.app().require(__dirname + "/../examples");
         app.should.be.ok;
         app.listen(3000);
     });
