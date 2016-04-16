@@ -287,7 +287,7 @@ gencall.routers[0].calls[0].authenticated;
 gencall.routers[0].calls[0].privileges;
 ```
 
-## Docs
+# Method Documentation
 
 ### gencall.app()
 
