@@ -4,6 +4,38 @@
 
 Express router extensions.
 
+## Installation
+
+    npm install gencall
+    
+Gentleman Caller is designed for use within Express apps.
+
+## Applications
+
+The simplest and most comprehensive way to use the module is with the `app` and `require` methods.
+
+```javascript
+gencall.app()
+    .static("/static")
+    .require("/app", __dirname + "/routes/app", { path: "/example" })
+    .listen(80);
+```
+
+The `app` method returns an [Express]() app with `require` and `static` methods.  The `require` method uses the file system and javascript modules to define a route hierarchy.  Each javascript file that require processes is expected to be in the module form:
+
+```javascript
+module.exports = function(router, options) {
+    // ...
+};
+```
+
+* If `app.require` targets a ".js" file, only that file will be loaded.  
+* If `app.require` targets a directory, it is recursively read; the path to the file (e.g. /app/routes.js) defines a url mount point (i.e. endpoints defined within route.js would be accessible at /app/route/*).  An index.js file will receive the folder-level router.
+
+## Routers
+
+Routers are where the magic happens.  An `app.require` call takes care of router generation and mounting behind the scenes, simply passing `router` objects into each module for wire-up.  Create a router manually with the `gencall.router` method using the same options that the `express.Router()` method takes.
+
 ```javascript
 var gencall = require("gencall");
 
@@ -12,7 +44,26 @@ var router = gencall.router({
     mergeParams: false,
     strict: false
 });
+```
 
+A `gencall.router` is an `express.Router` will some extra stuff, mainly the `call` interface.  This is an API to make endpoing specification much more flexible.  Calls can handle embedded documentation, validation, and security directives.  The framework makes use of this endpoint metadata not just to generate interface enforcement mechanisms, but also to generate artifacts like documentation and client libraries.
+
+It is necessary to maintain a strict `router` hierarchy to make proper use of interface metadata.  __IMPORTANT!__ Don't use `app.use` or `router.use` ([full explanation below](#metadata)).  Instead, use `router.mount(parent, paths)`, which is a bottom up assembly method.  This is taken care of automatically when using `app.require`.
+
+```javascript
+var app = express(),
+    router = gencall.router(),
+    sub = gencall.router();
+    
+router.mount(app, "/app");
+sub.mount(router, "/sub");
+```
+
+## Calls
+
+The `router.call` method returns a flexible interface for wiring up url handlers.  A `call` can register with one or more HTTP verbs and paths; it may specify an interface that carries out validation on parameters delivered though params, query, and body; it may expect `req.session` to be present pass certain security requirements.  Finally, it executes some logic, the result of which may be rendered to accomodate a preferred content format (e.g. json, xml, html).
+
+```javascript
 router.call().secure().get("api/:lang").params({
     lang: {
         type: "text",
@@ -26,105 +77,6 @@ router.call().secure().get("api/:lang").params({
     });
 });
 ```
-
-## Applications
-
-The simplest and most comprehensive way to use the module is with the `app` and `mount` methods.
-
-```javascript
-gencall.app()
-    .mount("/app", __dirname + "/routes/app")
-    .listen(80);
-    
-var app = gencall.app();
-gencall.mount(app, "/app", __dirname + "/routes/app", { path: "/example" });
-app.listen(80);
-```
-
-### gencall.app()
-
-The module exposes a top-level `app` method that returns a modified `express()` application object.  This instance has a `mount` method which invokes the top-level `mount` method, as well as a `static` method which is a convenience call for `app.use(express.static(root, options))`.
-
-### gencall.mount(parent, filepath, options)
-
-Constructs a route hierarchy from a file system hierarchy.  
-
-__parent__ is a router or app.  
-__filepath__ is either a file or directory of route modules.
-__options__ are passed to constructed routers and route modules.
-
-A route module (e.g. /routes/app/call.js) look like this:
-
-```javascript
-module.exports = function(router, options) {
-    router.call().secure().get("/some-call").process(function(req, res, next) {
-        res.respond({ data: "some data" });
-    });
-    
-    // ...
-};
-```
-
-The module is mounted at a url path that matches its file path.  For example, the above snippet would be hosted at `/example/routes/app/call/some-call`.  To mount endpoints at the parent-level, name a folder or file `index`.  For example, if the file above were named index.js, the call would be hosted at `/example/routes/app/some-call`.
-
-## Create Routers
-
-Create a router with the same options that the `express.Router()` method takes.
-
-```javascript
-gencall.router({ 
-    caseSensitive: false,
-    mergeParams: false,
-    strict: false
-});
-```
-
-__IMPORTANT!__ Don't use `app.use` or `router.use` ([full explanation below](#metadata)).  Instead, use `router.mount(parent, paths)`, which is a bottom up assembly method.
-
-```javascript
-var app = express(),
-    router = gencall.router(),
-    sub = gencall.router();
-    
-router.mount(app, "/app");
-sub.mount(router, "/sub");
-```
-
-The router object is a direct extension of the ExpressJS `Router` object.  So all the regular stuff works as expected.
-
-```javascript
-router.all(route, handler)
-router.METHOD(route, handler)
-router.param(name, handler)
-router.route(route)
-router.use([route], middleware)
-```
-
-View [docs here](http://expressjs.com/en/api.html#router "ExpressJS Router Docs").
-
-### router.mount(parent, path)
-
-A bottom up version of `use`.  "Mounting" rather than "using" allows routers to know their parents and establish `mountpath`'s all the way down the route hierarchy.  This approach supports [artifact generation](#artifacts).
-
-### router.error(handler)
-
-An error handler in the form of `function(err, req, res, next)` that will be appended to the end of all `call.process` handlers.
-
-### router.secure([privileges])
-
-Requires that the request be made from an authenticated user.  If privileges are specified, the user must be authorized for those roles.  See [call.secure](#call.secure) below for more info.
-
-### router.paths()
-
-An array of url paths where the `router` is mounted.  This is calculated by performing a cartesian combination of all `mountpath`'s up the route hierarchy.
-
-### router.static(root, options)
-
-A shortcut for `router.use(express.static(root, options))`.
-
-## Caller Interface
-
-The `router.call()` method returns the main Gentleman Caller interface.
 
 ### call.secure([privileges]) <a id="call.secure"></a>
 
@@ -334,3 +286,65 @@ gencall.routers[0].calls[0].inputs;
 gencall.routers[0].calls[0].authenticated;
 gencall.routers[0].calls[0].privileges;
 ```
+
+## Docs
+
+### gencall.app()
+
+The module exposes a top-level `app` method that returns a modified `express()` application object.  This instance has a `mount` method which invokes the top-level `mount` method, as well as a `static` method which is a convenience call for `app.use(express.static(root, options))`.
+
+### gencall.mount(parent, filepath, options)
+
+Constructs a route hierarchy from a file system hierarchy.  
+
+__parent__ is a router or app.  
+__filepath__ is either a file or directory of route modules.
+__options__ are passed to constructed routers and route modules.
+
+A route module (e.g. /routes/app/call.js) look like this:
+
+```javascript
+module.exports = function(router, options) {
+    router.call().secure().get("/some-call").process(function(req, res, next) {
+        res.respond({ data: "some data" });
+    });
+    
+    // ...
+};
+```
+
+The module is mounted at a url path that matches its file path.  For example, the above snippet would be hosted at `/example/routes/app/call/some-call`.  To mount endpoints at the parent-level, name a folder or file `index`.  For example, if the file above were named index.js, the call would be hosted at `/example/routes/app/some-call`.
+
+## gencall.router([options])
+
+The router object is a direct extension of the ExpressJS `Router` object.  So all the regular stuff works as expected.
+
+```javascript
+router.all(route, handler)
+router.METHOD(route, handler)
+router.param(name, handler)
+router.route(route)
+router.use([route], middleware)
+```
+
+View [docs here](http://expressjs.com/en/api.html#router "ExpressJS Router Docs").
+
+### router.mount(parent, path)
+
+A bottom up version of `use`.  "Mounting" rather than "using" allows routers to know their parents and establish `mountpath`'s all the way down the route hierarchy.  This approach supports [artifact generation](#artifacts).
+
+### router.error(handler)
+
+An error handler in the form of `function(err, req, res, next)` that will be appended to the end of all `call.process` handlers.
+
+### router.secure([privileges])
+
+Requires that the request be made from an authenticated user.  If privileges are specified, the user must be authorized for those roles.  See [call.secure](#call.secure) below for more info.
+
+### router.paths()
+
+An array of url paths where the `router` is mounted.  This is calculated by performing a cartesian combination of all `mountpath`'s up the route hierarchy.
+
+### router.static(root, options)
+
+A shortcut for `router.use(express.static(root, options))`.
