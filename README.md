@@ -65,7 +65,7 @@ The `router.call` method returns a flexible interface for wiring up url handlers
 
 ```javascript
 router.call()
-    .name("Lang Call").
+    .name("Lang Call")
     .describe("Generates a client for this router.")
     .secure().get("api/:lang").params({
         lang: {
